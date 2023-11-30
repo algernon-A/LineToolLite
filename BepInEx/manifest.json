@@ -1,0 +1,10 @@
+{
+  "name": "Line_Tool_Lite",
+  "version_number": "1.0.0",
+  "website_url": "https://github.com/algernon-A/LineToolLite",
+  "description": "Place objects in lines, curves, or circles",
+  "dependencies": [
+    "BepInEx-BepInExPack-5.4.2100",
+    "algernon-Unified_Icon_Library-1.0.0"
+  ]
+}

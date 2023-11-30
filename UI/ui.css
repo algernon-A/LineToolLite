@@ -1,0 +1,6 @@
+/* Simple component to hide its parent. */
+.hidden {
+    opacity: 0;
+    pointer-events: none;
+    background-color: #00000000;
+}

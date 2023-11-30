@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+	<PropertyGroup>
+		<TargetFramework>net472</TargetFramework>
+		<UnityVersion>2022.3.7f1</UnityVersion>
+		<DataPath>$(LOCALAPPDATA)\..\LocalLow\Colossal Order\Cities Skylines II</DataPath>
+		<InstallationPath>$(MSBuildProgramFiles32)\Steam\steamapps\common\Cities Skylines II</InstallationPath>
+		<ManagedDLLPath>$(InstallationPath)\Cities2_Data\Managed</ManagedDLLPath>
+		<AssemblySearchPaths>
+			$(AssemblySearchPaths);
+			$(ManagedDLLPath);
+		</AssemblySearchPaths>
+	</PropertyGroup>
+</Project>

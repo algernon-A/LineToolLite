@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<Title>Line Tool Lite</Title>
+		<AssemblyTitle>$(Title)</AssemblyTitle>
+		<Description>A Cities: Skylines 2 mod.</Description>
+		<Authors>algernon</Authors>
+		<Copyright>Copyright © 2023 algernon (github.com/algernon-A). All rights reserved.</Copyright>
+		<Product>$(Title)</Product>
+		<Version>1.0</Version>
+		<LangVersion>9.0</LangVersion>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+	</PropertyGroup>
+
+	<Import Project="Config/Postbuild.csproj" />
+	<Import Project="Config/Targets.csproj" />
+	<Import Project="Config/References.csproj" />
+	<Import Project="BepInEx/BepInEx.csproj" />
+
+	<ItemGroup>
+		<AdditionalFiles Include="stylecop.json" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="Config/PostBuild.csproj" />
+		<None Include="Config/References.csproj" />
+		<None Include="Config/Targets.csproj" />
+		<None Include="BepInEx/BepInEx.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <EmbeddedResource Include="UI\ui.css" />
+	  <EmbeddedResource Include="UI\ui.html" />
+	  <EmbeddedResource Include="UI\ui.js" />
+	</ItemGroup>
+</Project>

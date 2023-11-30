@@ -1,0 +1,24 @@
+<Project>
+	<Target Name="CheckManagedDLLPath" BeforeTargets="PreBuildEvent">
+		<Message Text="$(CommonLocation)\General.targets" Importance="high"/>
+		<Error Condition="!Exists('$(ManagedDLLPath)')" Text="The Managed DLL path is wrong: $(ManagedDLLPath)" />
+		<OnError ExecuteTargets="CheckDataPath" />
+	</Target>
+
+	<Target Name="CheckDataPath" AfterTargets="CheckInstallationPath">
+		<Error Condition="!Exists('$(DataPath)')" Text="The Game Data path is wrong: $(DataPath)" />
+	</Target>
+	
+	<Target Name="AfterBuildAction" AfterTargets="AfterBuild">
+		<PropertyGroup>
+			<DeployDir>$(InstallationPath)/BepInEx/plugins/$(ProjectName)</DeployDir>
+		</PropertyGroup>
+		<ItemGroup>
+			<FilesToCopy Include="$(OutDir)\**\0Harmony.dll" />
+			<FilesToCopy Include="$(OutDir)\**\$(ProjectName).dll" />
+		</ItemGroup>
+		<Message Text="Copy output to deploy dir $(DeployDir)" Importance="high" />
+		<RemoveDir Directories="@(DeployDir)" />
+		<Copy SourceFiles="@(FilesToCopy)" DestinationFolder="$(DeployDir)" />
+	</Target>
+</Project>

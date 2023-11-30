@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+	<ItemGroup>
+		<Reference Include="Game">
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="Colossal.AssetPipeline">
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="Colossal.Core">
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="Colossal.UI">
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="Colossal.UI.Binding">
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="Colossal.Logging">
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="Colossal.Mathematics">
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="Colossal.Mono.Cecil">
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="Unity.Collections">
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="Unity.Entities">
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="Unity.InputSystem">
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="Unity.Mathematics">
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="cohtml.Net">
+			<Private>false</Private>
+		</Reference>
+	</ItemGroup>
+</Project>
