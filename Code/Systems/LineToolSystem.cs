@@ -556,6 +556,9 @@ namespace LineTool
                 _originalXP = 0;
             }
 
+            // Reset state.
+            _mode.Reset();
+
             base.OnStopRunning();
         }
 

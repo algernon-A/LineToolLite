@@ -1,3 +1,6 @@
+- Rework UI JavaScript to survive UI regeneration (thanks to Captain of Coit).
+- Remove JavaScript globals.
+
 1.0.1:
 - Embed icons in mod instead of using Unified Icon Library due to Thunderstore mod manager breaking things.
 - Add warning about HookUI incompatibility.

@@ -3,8 +3,8 @@
 // </copyright>
 
 // Function to adjust spacing.
-if (typeof lineToolAdjustSpacing !== 'function') {
-    function lineToolAdjustSpacing(event, adjustment) {
+if (typeof lineTool.adjustSpacing !== 'function') {
+    lineTool.adjustSpacing = function(event, adjustment) {
         // Adjust for modifier keys - multiplying adjustment by 10 for FP rounding.
         var finalAdjustment = adjustment;
         if (event) {
@@ -15,11 +15,11 @@ if (typeof lineToolAdjustSpacing !== 'function') {
         }
 
         // Don't apply if adjutment will bring us below zero.
-        newSpacing = lineToolSpacing + finalAdjustment;
+        newSpacing = lineTool.spacing + finalAdjustment;
         if (newSpacing < 1) return;
 
         // Apply spacing.
-        lineToolSpacing = newSpacing;
+        lineTool.spacing = newSpacing;
         var roundedSpacing = newSpacing / 10;
         engine.trigger('SetLineToolSpacing', roundedSpacing);
         document.getElementById("line-tool-spacing-field").innerHTML = roundedSpacing + " m";
@@ -27,10 +27,10 @@ if (typeof lineToolAdjustSpacing !== 'function') {
 }
 
 // Function to adjust rotation.
-if (typeof lineToolAdjustRotation !== 'function') {
-    function lineToolAdjustRotation(event, adjustment) {
+if (typeof lineTool.adjustRotation !== 'function') {
+    lineTool.adjustRotation = function(event, adjustment) {
         // Adjust for modifier keys.
-        var finalAdjustment = adjustment;
+        let finalAdjustment = adjustment;
         if (event) {
             if (event.shiftKey)
                 finalAdjustment *= 90;
@@ -39,44 +39,44 @@ if (typeof lineToolAdjustRotation !== 'function') {
         }
 
         // Bounds check rotation.
-        lineToolRotation += finalAdjustment;
-        if (lineToolRotation >= 360) {
-            lineToolRotation -= 360;
+        lineTool.rotation += finalAdjustment;
+        if (lineTool.rotation >= 360) {
+            lineTool.rotation -= 360;
         }
-        if (lineToolRotation < 0) {
-            lineToolRotation += 360;
+        if (lineTool.rotation < 0) {
+            lineTool.rotation += 360;
         }
 
         // Apply rotation.
-        engine.trigger('SetLineToolRotation', lineToolRotation);
-        document.getElementById("line-tool-rotation-field").innerHTML = lineToolRotation + "&deg;";
+        engine.trigger('SetLineToolRotation', lineTool.rotation);
+        document.getElementById("line-tool-rotation-field").innerHTML = lineTool.rotation + "&deg;";
     }
 }
 
 // Function to implement random rotation selection.
-if (typeof lineToolRandomRotation !== 'function') {
-    function lineToolRandomRotation() {
+if (typeof lineTool.randomRotation !== 'function') {
+    lineTool.randomRotation = function() {
         var adjustRotationButton = document.getElementById("line-tool-rotation-random");
         if (adjustRotationButton.classList.contains("selected")) {
             adjustRotationButton.classList.remove("selected");
             engine.trigger('SetLineToolRandomRotation', false);
 
             // Show rotation tools.
-            lineToolSetRotationVisibility(true);
+            lineTool.setRotationVisibility(true);
         }
         else {
             adjustRotationButton.classList.add("selected");
             engine.trigger('SetLineToolRandomRotation', true);
 
             // Hide rotation tools.
-            lineToolSetRotationVisibility(false);
+            lineTool.setRotationVisibility(false);
         }
     }
 }
 
 // Function to show the Tree Control age panel.
-if (typeof addLineToolTreeControl !== 'function') {
-    function addLineToolTreeControl(event, adjustment) {
+if (typeof lineTool.addTreeControl !== 'function') {
+    lineTool.addTreeControl = function(event, adjustment) {
         if (typeof buildTreeAgeItem == 'function') {
             var modeLine = document.getElementById("line-tool-mode");
             buildTreeAgeItem(modeLine, "afterend");
@@ -86,8 +86,8 @@ if (typeof addLineToolTreeControl !== 'function') {
 }
 
 // Function to activate straight mode.
-if (typeof lineToolHandleStraightMode !== 'function') {
-    function lineToolHandleStraightMode() {
+if (typeof lineTool.handleStraightMode !== 'function') {
+    lineTool.handleStraightMode = function() {
         document.getElementById("line-tool-simplecurve").classList.remove("selected");
         document.getElementById("line-tool-circle").classList.remove("selected");
         document.getElementById("line-tool-straight").classList.add("selected");
@@ -96,8 +96,8 @@ if (typeof lineToolHandleStraightMode !== 'function') {
 }
 
 // Function to activate simple curve mode.
-if (typeof lineToolHandleSimpleCurveMode !== 'function') {
-    function lineToolHandleSimpleCurveMode() {
+if (typeof lineTool.handleSimpleCurveMode !== 'function') {
+    lineTool.handleSimpleCurveMode = function() {
         document.getElementById("line-tool-straight").classList.remove("selected");
         document.getElementById("line-tool-circle").classList.remove("selected");
         document.getElementById("line-tool-simplecurve").classList.add("selected");
@@ -106,8 +106,8 @@ if (typeof lineToolHandleSimpleCurveMode !== 'function') {
 }
 
 // Function to activate circle mode.
-if (typeof lineToolHandleCircleMode !== 'function') {
-    function lineToolHandleCircleMode() {
+if (typeof lineTool.handleCircleMode !== 'function') {
+    lineTool.handleCircleMode = function() {
         document.getElementById("line-tool-straight").classList.remove("selected");
         document.getElementById("line-tool-simplecurve").classList.remove("selected");
         document.getElementById("line-tool-circle").classList.add("selected");
@@ -116,10 +116,10 @@ if (typeof lineToolHandleCircleMode !== 'function') {
 }
 
 // Function to set rotation selection control visibility
-if (typeof lineToolSetRotationVisibility !== 'function') {
-    function lineToolSetRotationVisibility(isVisible) {
-        lineToolSetButtonVisibility(document.getElementById("line-tool-rotation-up"), isVisible);
-        lineToolSetButtonVisibility(document.getElementById("line-tool-rotation-down"), isVisible);
+if (typeof lineTool.setRotationVisibility !== 'function') {
+    lineTool.setRotationVisibility = function(isVisible) {
+        lineTool.setButtonVisibility(document.getElementById("line-tool-rotation-up"), isVisible);
+        lineTool.setButtonVisibility(document.getElementById("line-tool-rotation-down"), isVisible);
         if (isVisible) {
             document.getElementById("line-tool-rotation-field").style.visibility = "visible";
         }
@@ -130,8 +130,8 @@ if (typeof lineToolSetRotationVisibility !== 'function') {
 }
 
 // Function to set the visibility status of a button with icon child.
-if (typeof lineToolSetButtonVisibility !== 'function') {
-    function lineToolSetButtonVisibility(button, isVisible) {
+if (typeof lineTool.setButtonVisibility !== 'function') {
+    lineTool.setButtonVisibility = function(button, isVisible) {
         var firstChild = button.firstChild;
         if (isVisible) {
             button.classList.remove("hidden");
@@ -148,17 +148,17 @@ if (typeof lineToolSetButtonVisibility !== 'function') {
 
 
 // Set initial figures.
-lineToolAdjustSpacing(null, 0);
-lineToolAdjustRotation(null, 0);
+lineTool.adjustSpacing(null, 0);
+lineTool.adjustRotation(null, 0);
 
 // Add button event handlers.
-document.getElementById("line-tool-spacing-down").onmousedown = (event) => { lineToolAdjustSpacing(event, -1); }
-document.getElementById("line-tool-spacing-up").onmousedown = (event) => { lineToolAdjustSpacing(event, 1); }
+document.getElementById("line-tool-spacing-down").onmousedown = (event) => { lineTool.adjustSpacing(event, -1); }
+document.getElementById("line-tool-spacing-up").onmousedown = (event) => { lineTool.adjustSpacing(event, 1); }
 
-document.getElementById("line-tool-rotation-random").onmousedown = () => { lineToolRandomRotation(); }
-document.getElementById("line-tool-rotation-up").onmousedown = (event) => { lineToolAdjustRotation(event, 1); }
-document.getElementById("line-tool-rotation-down").onmousedown = (event) => { lineToolAdjustRotation(event, -1); }
+document.getElementById("line-tool-rotation-random").onmousedown = () => { lineTool.randomRotation(); }
+document.getElementById("line-tool-rotation-up").onmousedown = (event) => { lineTool.adjustRotation(event, 1); }
+document.getElementById("line-tool-rotation-down").onmousedown = (event) => { lineTool.adjustRotation(event, -1); }
 
-document.getElementById("line-tool-straight").onclick = lineToolHandleStraightMode;
-document.getElementById("line-tool-simplecurve").onclick = lineToolHandleSimpleCurveMode;
-document.getElementById("line-tool-circle").onclick = lineToolHandleCircleMode;
+document.getElementById("line-tool-straight").onclick = lineTool.handleStraightMode;
+document.getElementById("line-tool-simplecurve").onclick = lineTool.handleSimpleCurveMode;
+document.getElementById("line-tool-circle").onclick = lineTool.handleCircleMode;

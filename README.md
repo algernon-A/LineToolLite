@@ -7,11 +7,6 @@
 
 Works on all types of objects - trees, shrubs, props.  You can even place simple buildings and even vehicles (for amusement value only - see limitations below).
 
-## IMPORTANT: NOT COMPATIBLE WITH HOOKUI OR MODS THAT USE IT
-If you're using HookUI and any mods that use it (such as Unemployment Monitor, Extended Tooltip, City Monitor, or Vehicle Counter) then this mod won't work properly (you'll get errors when activating the tool and some, or even all, functionality may or may not work).
-
-This is due to the way HookUI hooks the game's UI system which makes it difficult for other mods to also interact with the UI.  CaptainOfCoit is aware of the issue and we're in contact trying to work out a solution.
-
 ## Instructions
 ### To activate the tool:
 - Select the object that you'd like to place in a line (e.g. a tree) - either normally or with the Dev UI.
@@ -57,6 +52,9 @@ Vehicles *can* be placed, but will get confused and likely do strange things, wh
 There is a more feature-complete version of this mod in the works, but that requires official modding support to be publicly released (because it uses functionality that isn't present in the current public release of the game).  Since we're all getting sick and tired of waiting for that, this is a version for use with BepInEx (and that has all functionality stripped out that *isn't* available in the current public release of the game).
 
 When official modding support (finally!) releases, this mod will be replaced by the full (non-lite) version on Paradox Mods.
+
+### Credits
+Special thanks to Captain of Coit for troubleshooting, guidance, and general advice with the UI coding!
 
 ### Source code
 [Available on GitHub](https://github.com/algernon-A/LineToolLite) (algernon-A/LineToolLite).

@@ -5,6 +5,7 @@
 namespace LineTool
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Reflection;
     using System.Text;
@@ -30,9 +31,13 @@ namespace LineTool
         // Internal status.
         private bool _toolIsActive = false;
 
+        // Event binding.
+        private List<BoundEventHandle> _eventHandles;
+
         // UI injection data.
         private string _injectedHTML;
         private string _injectedJS;
+        private string _injectedCSS;
 
         /// <summary>
         /// Called when the system is created.
@@ -52,22 +57,10 @@ namespace LineTool
             // Read injection data.
             _injectedHTML = ReadHTML("LineToolLite.UI.ui.html", "div.className = \"tool-options-panel_Se6\"; div.id = \"line-tool-panel\"; document.getElementsByClassName(\"tool-side-column_l9i\")[0].appendChild(div);");
             _injectedJS = ReadJS("LineToolLite.UI.ui.js");
+            _injectedCSS = ReadCSS("LineToolLite.UI.ui.css");
 
-            // Inject .css.
-            ExecuteScript(_uiView, ReadCSS("LineToolLite.UI.ui.css"));
-
-            // Set initial variables in UI (multiply spacing by 10 for accuracy conversion).
-            ExecuteScript(_uiView, $"var lineToolSpacing = {_lineToolSystem.Spacing * 10};");
-            ExecuteScript(_uiView, $"var lineToolRotation = {_lineToolSystem.Rotation};");
-
-            // Register event callbacks.
-            _uiView.RegisterForEvent("SetLineToolSpacing", (Action<float>)SetSpacing);
-            _uiView.RegisterForEvent("SetLineToolRandomRotation", (Action<bool>)SetRandomRotation);
-            _uiView.RegisterForEvent("SetLineToolRotation", (Action<int>)SetRotation);
-            _uiView.RegisterForEvent("SetStraightMode", (Action)SetStraightMode);
-            _uiView.RegisterForEvent("SetSimpleCurveMode", (Action)SetSimpleCurveMode);
-            _uiView.RegisterForEvent("SetCircleMode", (Action)SetCircleMode);
-            _uiView.RegisterForEvent("LineToolTreeControlUpdated", (Action)TreeControlUpdated);
+            // Initialize event handle list.
+            _eventHandles = new ();
         }
 
         /// <summary>
@@ -82,12 +75,17 @@ namespace LineTool
             {
                 if (!_toolIsActive)
                 {
-                    // Tool is now active but previously wasn't; attempt to get game's tool options menu.
-                    ExecuteScript(_uiView, "var toolOptions = document.getElementsByClassName(\"tool-side-column_l9i\"); if (toolOptions && toolOptions.length > 0) { engine.trigger('ToolOptionsReady', toolOptions[0].innerHTML);}");
+                    // Tool is now active but previously wasn't; ensure namespace.
+                    ExecuteScript(_uiView, "if (lineTool == null) var lineTool = {};");
+
+                    // Set initial variables in UI (multiply spacing by 10 for accuracy conversion).
+                    ExecuteScript(_uiView, $"lineTool.spacing = {_lineToolSystem.Spacing * 10};");
+                    ExecuteScript(_uiView, $"lineTool.rotation = {_lineToolSystem.Rotation};");
 
                     // Attach our custom controls.
                     // Inject scripts.
                     _log.Debug("injecting component data");
+                    ExecuteScript(_uiView, _injectedCSS);
                     ExecuteScript(_uiView, _injectedHTML);
                     ExecuteScript(_uiView, _injectedJS);
 
@@ -114,8 +112,17 @@ namespace LineTool
                     // Show tree control menu if tree control is active.
                     if (EntityManager.HasComponent<TreeData>(_lineToolSystem.SelectedEntity))
                     {
-                        ExecuteScript(_uiView, "addLineToolTreeControl();");
+                        ExecuteScript(_uiView, "lineTool.addTreeControl();");
                     }
+
+                    // Register event callbacks.
+                    _eventHandles.Add(_uiView.RegisterForEvent("SetLineToolSpacing", (Action<float>)SetSpacing));
+                    _eventHandles.Add(_uiView.RegisterForEvent("SetLineToolRandomRotation", (Action<bool>)SetRandomRotation));
+                    _eventHandles.Add(_uiView.RegisterForEvent("SetLineToolRotation", (Action<int>)SetRotation));
+                    _eventHandles.Add(_uiView.RegisterForEvent("SetStraightMode", (Action)SetStraightMode));
+                    _eventHandles.Add(_uiView.RegisterForEvent("SetSimpleCurveMode", (Action)SetSimpleCurveMode));
+                    _eventHandles.Add(_uiView.RegisterForEvent("SetCircleMode", (Action)SetCircleMode));
+                    _eventHandles.Add(_uiView.RegisterForEvent("LineToolTreeControlUpdated", (Action)TreeControlUpdated));
 
                     // Record current tool state.
                     _toolIsActive = true;
@@ -128,6 +135,12 @@ namespace LineTool
                 {
                     // Remove DOM activation.
                     ExecuteScript(_uiView, "var panel = document.getElementById(\"line-tool-panel\"); if (panel) panel.parentElement.removeChild(panel);");
+
+                    // Remove event callbacks.
+                    foreach (BoundEventHandle eventHandle in _eventHandles)
+                    {
+                        _uiView.UnregisterFromEvent(eventHandle);
+                    }
 
                     // Record current tool state.
                     _toolIsActive = false;
