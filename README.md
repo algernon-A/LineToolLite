@@ -7,6 +7,11 @@
 
 Works on all types of objects - trees, shrubs, props.  You can even place simple buildings and even vehicles (for amusement value only - see limitations below).
 
+## IMPORTANT: NOT COMPATIBLE WITH HOOKUI OR MODS THAT USE IT
+If you're using HookUI and any mods that use it (such as Unemployment Monitor, Extended Tooltip, City Monitor, or Vehicle Counter) then this mod won't work properly (you'll get errors when activating the tool and some, or even all, functionality may or may not work).
+
+This is due to the way HookUI hooks the game's UI system which makes it difficult for other mods to also interact with the UI.  CaptainOfCoit is aware of the issue and we're in contact trying to work out a solution.
+
 ## Instructions
 ### To activate the tool:
 - Select the object that you'd like to place in a line (e.g. a tree) - either normally or with the Dev UI.
@@ -29,12 +34,14 @@ Works on all types of objects - trees, shrubs, props.  You can even place simple
 
 ## Requirements
 - BepInEx 5
-- Unified Icon Library
+
+## Conflicts
+- HookUI
 
 ## Installation
 1. Make sure that BepInEx 5 is installed.
-2. Make sure that Unified Icon Library is installed.
-3. Place the `LineTool` folder in the archive in your BepInEx `Plugins` folder.
+1. Make sure that you're **NOT** using HookUI or mods that use it (such as Unemployment Monitor, Extended Tooltip, City Monitor, or Vehicle Counter).
+1. Place the `LineTool` folder in the archive in your BepInEx `Plugins` folder.
 
 ## Support
 It's usually easiest to contact me at the [**Cities: Skylines modding Discord**](https://discord.gg/ZaH2zjtk), or I'm also contactable as u/algernon_A on the [Cities: Skylines modding Subreddit](https://www.reddit.com/r/CitiesSkylinesModding) (r/CitiesSkylinesModding).  You could also raise an issue on the GitHub.
@@ -63,7 +70,7 @@ The only authorized distribution platforms for this mod, or mods based substanti
 
 Downloading, installation, and use of this mod is at your own risk.
 
->This mod is Copyright 2023 algernon (github.com/algernon-A).  All rights reserved.  To eliminate any doubt, explicit permission is hereby granted to download this mod for personal use and for Thunderstore.io to distribute it (<- I hope all this isn't actually necessary, but you never know these days).  Permission is explicitly NOT granted for further distribtution or licensing (<- this bit so I can at least *try* to DMCA the malware-spreaders). If you think you've got a good use-case for an exception to any of this, contact me, let's talk!
+>This mod is Copyright 2023 algernon (github.com/algernon-A).  All rights reserved.  To eliminate any doubt, explicit permission is hereby granted to download this mod for personal use and for Thunderstore.io to distribute it (<- I hope all this isn't actually necessary, but you never know these days).  Permission is explicitly NOT granted for further distribution or licensing (<- this bit so I can at least *try* to DMCA the malware-spreaders). If you think you've got a good use-case for an exception to any of this, contact me, let's talk!
 
 >THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 

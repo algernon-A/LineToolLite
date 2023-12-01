@@ -1,0 +1,2 @@
+1.0.1:
+- Embed icons in mod instead of using Unified Icon Library due to Thunderstore mod manager breaking things.

@@ -14,8 +14,9 @@
 			<DeployDir>$(InstallationPath)/BepInEx/plugins/$(ProjectName)</DeployDir>
 		</PropertyGroup>
 		<ItemGroup>
-			<FilesToCopy Include="$(OutDir)\**\0Harmony.dll" />
-			<FilesToCopy Include="$(OutDir)\**\$(ProjectName).dll" />
+			<FilesToCopy Include="$(OutDir)/**/0Harmony.dll" />
+			<FilesToCopy Include="$(OutDir)/**/$(ProjectName).dll" />
+			<FilesToCopy Include="$(ProjectDir)/Icons/*.svg" />
 		</ItemGroup>
 		<Message Text="Copy output to deploy dir $(DeployDir)" Importance="high" />
 		<RemoveDir Directories="@(DeployDir)" />

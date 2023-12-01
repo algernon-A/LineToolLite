@@ -4,9 +4,12 @@
 
 namespace LineTool
 {
+    using System.IO;
     using Colossal.Logging;
     using Game;
     using Game.Modding;
+    using Game.SceneFlow;
+    using Game.UI;
 
     /// <summary>
     /// The base mod class for instantiation by the game.
@@ -56,6 +59,10 @@ namespace LineTool
             updateSystem.UpdateAt<LineToolSystem>(SystemUpdatePhase.ToolUpdate);
             updateSystem.UpdateAfter<LineToolUISystem>(SystemUpdatePhase.UIUpdate);
             updateSystem.UpdateAt<LineToolTooltipSystem>(SystemUpdatePhase.UITooltip);
+
+            // Add mod UI icons to UI resource handler.
+            GameUIResourceHandler uiResourceHandler = GameManager.instance.userInterface.view.uiSystem.resourceHandler as GameUIResourceHandler;
+            uiResourceHandler?.HostLocationsMap.Add("linetool", new System.Collections.Generic.List<string> { Path.GetDirectoryName(typeof(Plugin).Assembly.Location) + "/" });
         }
 
         /// <summary>
