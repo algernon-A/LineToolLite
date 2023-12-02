@@ -105,8 +105,17 @@ namespace LineTool
                     {
                         ExecuteScript(_uiView, $"document.getElementById(\"line-tool-rotation-random\").classList.add(\"selected\");");
 
-                        // Hide rotation button.
-                        ExecuteScript(_uiView, "lineToolSetRotationVisibility(false);");
+                        // Hide rotation buttons.
+                        ExecuteScript(_uiView, "lineTool.setRotationVisibility(false);");
+                    }
+
+                    // Select fence mode button if needed.
+                    if (_lineToolSystem.FenceMode)
+                    {
+                        // Hide rotation and spacing buttons.
+                        ExecuteScript(_uiView, $"document.getElementById(\"line-tool-fence\").classList.add(\"selected\");");
+                        ExecuteScript(_uiView, "let randomRotationButton = document.getElementById(\"line-tool-rotation-random\"); lineTool.setButtonVisibility(randomRotationButton, false);");
+                        ExecuteScript(_uiView, "lineTool.setRotationVisibility(false); lineTool.setSpacingVisibility(false);");
                     }
 
                     // Show tree control menu if tree control is active.
@@ -117,6 +126,7 @@ namespace LineTool
 
                     // Register event callbacks.
                     _eventHandles.Add(_uiView.RegisterForEvent("SetLineToolSpacing", (Action<float>)SetSpacing));
+                    _eventHandles.Add(_uiView.RegisterForEvent("SetLineToolFenceMode", (Action<bool>)SetFenceMode));
                     _eventHandles.Add(_uiView.RegisterForEvent("SetLineToolRandomRotation", (Action<bool>)SetRandomRotation));
                     _eventHandles.Add(_uiView.RegisterForEvent("SetLineToolRotation", (Action<int>)SetRotation));
                     _eventHandles.Add(_uiView.RegisterForEvent("SetStraightMode", (Action)SetStraightMode));
@@ -315,6 +325,12 @@ namespace LineTool
         /// </summary>
         /// <param name="spacing">Value to set.</param>
         private void SetSpacing(float spacing) => _lineToolSystem.Spacing = spacing;
+
+        /// <summary>
+        /// Event callback to set fence mode.
+        /// </summary>
+        /// <param name="isActive">Value to set.</param>
+        private void SetFenceMode(bool isActive) => _lineToolSystem.FenceMode = isActive;
 
         /// <summary>
         /// Event callback to set the random rotation override.

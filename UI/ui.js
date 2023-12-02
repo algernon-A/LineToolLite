@@ -53,19 +53,54 @@ if (typeof lineTool.adjustRotation !== 'function') {
     }
 }
 
+// Function to implement fence mode selection.
+if (typeof lineTool.fenceMode !== 'function') {
+    lineTool.fenceMode = function () {
+        var fenceModeButton = document.getElementById("line-tool-fence");
+        if (fenceModeButton.classList.contains("selected")) {
+            fenceModeButton.classList.remove("selected");
+            engine.trigger('SetLineToolFenceMode', false);
+
+            // Show spacing and random rotation button.
+            lineTool.setSpacingVisibility(true);
+            let randomRotationButton = document.getElementById("line-tool-rotation-random");
+            lineTool.setButtonVisibility(randomRotationButton, true);
+
+            // Show rotation, but only if random rotation is not set.
+            if (!randomRotationButton.classList.contains("selected")) {
+                lineTool.setRotationVisibility(true);
+            }
+        }
+        else {
+            fenceModeButton.classList.add("selected");
+            engine.trigger('SetLineToolFenceMode', true);
+
+            // Disable random rotation and hide button.
+            let randomRotationButton = document.getElementById("line-tool-rotation-random");
+            randomRotationButton.classList.remove("selected");
+            engine.trigger('SetLineToolRandomRotation', false);
+            lineTool.setButtonVisibility(randomRotationButton, false);
+
+            // Hide rotation tools.
+            lineTool.setSpacingVisibility(false);
+            lineTool.setRotationVisibility(false);
+        }
+    }
+}
+
 // Function to implement random rotation selection.
 if (typeof lineTool.randomRotation !== 'function') {
     lineTool.randomRotation = function() {
-        var adjustRotationButton = document.getElementById("line-tool-rotation-random");
-        if (adjustRotationButton.classList.contains("selected")) {
-            adjustRotationButton.classList.remove("selected");
+        var randomRotationButton = document.getElementById("line-tool-rotation-random");
+        if (randomRotationButton.classList.contains("selected")) {
+            randomRotationButton.classList.remove("selected");
             engine.trigger('SetLineToolRandomRotation', false);
 
             // Show rotation tools.
             lineTool.setRotationVisibility(true);
         }
         else {
-            adjustRotationButton.classList.add("selected");
+            randomRotationButton.classList.add("selected");
             engine.trigger('SetLineToolRandomRotation', true);
 
             // Hide rotation tools.
@@ -115,6 +150,20 @@ if (typeof lineTool.handleCircleMode !== 'function') {
     }
 }
 
+// Function to set spacing selection control visibility
+if (typeof lineTool.setSpacingVisibility !== 'function') {
+    lineTool.setSpacingVisibility = function (isVisible) {
+        lineTool.setButtonVisibility(document.getElementById("line-tool-spacing-up"), isVisible);
+        lineTool.setButtonVisibility(document.getElementById("line-tool-spacing-down"), isVisible);
+        if (isVisible) {
+            document.getElementById("line-tool-spacing-field").style.visibility = "visible";
+        }
+        else {
+            document.getElementById("line-tool-spacing-field").style.visibility = "hidden";
+        }
+    }
+}
+
 // Function to set rotation selection control visibility
 if (typeof lineTool.setRotationVisibility !== 'function') {
     lineTool.setRotationVisibility = function(isVisible) {
@@ -152,6 +201,7 @@ lineTool.adjustSpacing(null, 0);
 lineTool.adjustRotation(null, 0);
 
 // Add button event handlers.
+document.getElementById("line-tool-fence").onmousedown = () => { lineTool.fenceMode(); }
 document.getElementById("line-tool-spacing-down").onmousedown = (event) => { lineTool.adjustSpacing(event, -1); }
 document.getElementById("line-tool-spacing-up").onmousedown = (event) => { lineTool.adjustSpacing(event, 1); }
 

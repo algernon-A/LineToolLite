@@ -7,6 +7,7 @@ namespace LineTool
     using System.Reflection;
     using Colossal.Entities;
     using Colossal.Logging;
+    using Colossal.Mathematics;
     using Game.Common;
     using Game.Input;
     using Game.Objects;
@@ -35,6 +36,7 @@ namespace LineTool
 
         // Line calculations.
         private readonly NativeList<PointData> _points = new (Allocator.Persistent);
+        private bool _fenceMode = false;
         private bool _fixedPreview = false;
         private float3 _fixedPos;
         private Random _random = new ();
@@ -45,9 +47,10 @@ namespace LineTool
         private Entity _cursorEntity = Entity.Null;
 
         // Prefab selection.
-        private ObjectPrefab _selectedPrefab;
+        private ObjectGeometryPrefab _selectedPrefab;
         private Entity _selectedEntity = Entity.Null;
         private int _originalXP;
+        private Bounds1 _zBounds;
 
         // References.
         private ILog _log;
@@ -81,15 +84,38 @@ namespace LineTool
         public override string toolID => "Line Tool";
 
         /// <summary>
-        /// Gets or sets the line spacing.
+        /// Gets or sets the effective line spacing.
         /// </summary>
         internal float Spacing
         {
-            get => _spacing;
+            get
+            {
+                // Use calculated spacing for fence mode.
+                if (_fenceMode)
+                {
+                    return _zBounds.max - _zBounds.min;
+                }
+
+                // Not fence mode - use manual spacing.
+                return _spacing;
+            }
 
             set
             {
                 _spacing = value;
+                _dirty = true;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether fence mode is active.
+        /// </summary>
+        internal bool FenceMode
+        {
+            get => _fenceMode;
+            set
+            {
+                _fenceMode = value;
                 _dirty = true;
             }
         }
@@ -171,17 +197,31 @@ namespace LineTool
         {
             set
             {
-                _selectedPrefab = value as ObjectPrefab;
+                _selectedPrefab = value as ObjectGeometryPrefab;
 
-                // Update selected entity;
+                // Update selected entity.
                 if (_selectedPrefab is null)
                 {
+                    // No valid entity selected.
                     _selectedEntity = Entity.Null;
                 }
                 else
                 {
                     // Get selected entity.
                     _selectedEntity = m_PrefabSystem.GetEntity(_selectedPrefab);
+
+                    // Check bounds.
+                    _zBounds.min = 0;
+                    _zBounds.max = 0;
+                    foreach (ObjectMeshInfo mesh in _selectedPrefab.m_Meshes)
+                    {
+                        if (mesh.m_Mesh is RenderPrefab renderPrefab)
+                        {
+                            // Update bounds if either of the z extents of this mesh exceed the previous extent.
+                            _zBounds.min = math.min(_zBounds.min, renderPrefab.bounds.z.min);
+                            _zBounds.max = math.max(_zBounds.max, renderPrefab.bounds.z.max);
+                        }
+                    }
 
                     // Reduce any XP to zero while we're using the tool.
                     if (EntityManager.TryGetComponent(_selectedEntity, out PlaceableObjectData placeableData))
@@ -440,7 +480,7 @@ namespace LineTool
 
             // If we got here we're (re)calculating points.
             _points.Clear();
-            _mode.CalculatePoints(position, Spacing, _rotation, _points, ref _terrainHeightData);
+            _mode.CalculatePoints(position, _fenceMode, Spacing, _rotation, _zBounds, _points, ref _terrainHeightData);
 
             // Step along length and place objects.
             int count = 0;

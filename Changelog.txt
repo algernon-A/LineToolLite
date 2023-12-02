@@ -1,3 +1,6 @@
+1.0.3
+- Add initial fence mode.
+
 1.0.2
 - Rework UI JavaScript to survive UI regeneration and enable compatibility with HookUI (thanks to Captain of Coit).
 - Remove JavaScript globals.

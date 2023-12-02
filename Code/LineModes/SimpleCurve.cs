@@ -81,11 +81,13 @@ namespace LineTool
         /// Calculates the points to use based on this mode.
         /// </summary>
         /// <param name="currentPos">Selection current position.</param>
+        /// <param name="fenceMode">Set to <c>true</c> if fence mode is active.</param>
         /// <param name="spacing">Spacing setting.</param>
         /// <param name="rotation">Rotation setting.</param>
+        /// <param name="zBounds">Prefab zBounds.</param>
         /// <param name="pointList">List of points to populate.</param>
         /// <param name="heightData">Terrain height data reference.</param>
-        public override void CalculatePoints(float3 currentPos, float spacing, int rotation, NativeList<PointData> pointList, ref TerrainHeightData heightData)
+        public override void CalculatePoints(float3 currentPos, bool fenceMode, float spacing, int rotation, Bounds1 zBounds, NativeList<PointData> pointList, ref TerrainHeightData heightData)
         {
             // Don't do anything if we don't have valid start.
             if (!m_validStart)
@@ -96,31 +98,37 @@ namespace LineTool
             // If we have a valid start but no valid elbow, just draw a straight line.
             if (!m_validElbow)
             {
-                base.CalculatePoints(currentPos, spacing, rotation, pointList, ref heightData);
+                base.CalculatePoints(currentPos, fenceMode, spacing, rotation, zBounds, pointList, ref heightData);
                 return;
             }
 
             // Calculate Bezier.
             _thisBezier = NetUtils.FitCurve(new Line3.Segment(m_startPos, m_elbowPoint), new Line3.Segment(currentPos, m_elbowPoint));
 
-            // Rotation quaternion.
+            // Default rotation quaternion.
             quaternion qRotation = quaternion.Euler(0f, math.radians(rotation), 0f);
 
-            // Create points.
             float tFactor = 0f;
             while (tFactor < 1.0f)
             {
                 // Calculate point.
-                Vector3 thisPoint = MathUtils.Position(_thisBezier, tFactor);
+                float3 thisPoint = MathUtils.Position(_thisBezier, tFactor);
+
+                // Get next t factor.
+                tFactor = BezierStep(tFactor, spacing);
+
+                // Calculate applied rotation for fence mode.
+                if (fenceMode)
+                {
+                    float3 difference = MathUtils.Position(_thisBezier, tFactor) - thisPoint;
+                    qRotation = quaternion.Euler(0f, math.atan2(difference.x, difference.z), 0f);
+                }
 
                 // Calculate terrain height.
                 thisPoint.y = TerrainUtils.SampleHeight(ref heightData, thisPoint);
 
                 // Add point to list.
                 pointList.Add(new PointData { Position = thisPoint, Rotation = qRotation, });
-
-                // Get next t factor.
-                tFactor = BezierStep(tFactor, spacing);
             }
         }
 

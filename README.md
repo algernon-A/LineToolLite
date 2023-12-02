@@ -1,5 +1,6 @@
 # Cities Skylines 2 : Line Tool Lite
 - **Place objects in lines** - straight lines, curves, or circles.
+- **Fence mode** - automatically align objects end-to-end.
 - **Accurate placement** - no worrying about imprecision.
 - Easily adjust **spacing** and **rotation** using the in-game tool UI.
 - Live **previewing** included, so you can provisionally place a line and adjust spacing and/or rotation to see how it looks in real-time before making the final placement (or cancelling).
@@ -19,6 +20,7 @@ Works on all types of objects - trees, shrubs, props.  You can even place simple
 - **Control-click** at the end will leave the line in preview mode; it's not fully placed yet so you can go and adjust the settings and see the results in real time.  When finished, **left-click** to place or **right-click** to cancel.
 
 ### Use the tool UI to:
+- Toggle **fence mode**.
 - Toggle between **straight line**, **curved**, and **circle** modes.
 - Adjust **distances** using the arrow buttons - plain click for 1m increments, **shift-click** for 10m, **control-click** for 0.1m.
 - Select **random rotation** to have each object in the line have a different randomly-chosen rotation, or otherwise **manually adjust the rotation** for all items using the arrow buttons - plain click for 10-degree increments, **shift-click** for 90 degrees, **control-click** for 1 degree.
@@ -29,9 +31,6 @@ Works on all types of objects - trees, shrubs, props.  You can even place simple
 
 ## Requirements
 - BepInEx 5
-
-## Conflicts
-- HookUI
 
 ## Installation
 1. Make sure that BepInEx 5 is installed.
