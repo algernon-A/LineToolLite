@@ -143,7 +143,11 @@ namespace LineTool
         /// <param name="tooltips">Tooltip list.</param>
         public virtual void DrawOverlay(float3 currentPos, OverlayRenderSystem.Buffer overlayBuffer, NativeList<TooltipInfo> tooltips)
         {
-            DrawDashedLine(m_startPos, currentPos, new Line3.Segment(m_startPos, currentPos), overlayBuffer, tooltips);
+            // Don't draw overlay if we don't have a valid start.
+            if (m_validStart)
+            {
+                DrawDashedLine(m_startPos, currentPos, new Line3.Segment(m_startPos, currentPos), overlayBuffer, tooltips);
+            }
         }
 
         /// <summary>

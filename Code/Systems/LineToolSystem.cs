@@ -84,6 +84,11 @@ namespace LineTool
         public override string toolID => "Line Tool";
 
         /// <summary>
+        /// Gets the raw spacing setting.
+        /// </summary>
+        internal float RawSpacing => _spacing;
+
+        /// <summary>
         /// Gets or sets the effective line spacing.
         /// </summary>
         internal float Spacing
@@ -449,7 +454,7 @@ namespace LineTool
 
                     // Update cursor entity position.
                     EntityManager.SetComponentData(_cursorEntity, new Transform { m_Position = position, m_Rotation = GetEffectiveRotation(position) });
-                    EntityManager.AddComponent<Updated>(_cursorEntity);
+                    EntityManager.AddComponent<BatchesUpdated>(_cursorEntity);
 
                     // Ensure cursor entity tree state.
                     EnsureTreeState(_cursorEntity);
@@ -510,7 +515,7 @@ namespace LineTool
                 {
                     // Otherwise, use existing entity.
                     EntityManager.SetComponentData(_previewEntities[count], transformData);
-                    EntityManager.AddComponent<Updated>(_previewEntities[count]);
+                    EntityManager.AddComponent<BatchesUpdated>(_previewEntities[count]);
 
                     // Ensure any trees are still adults.
                     EnsureTreeState(_previewEntities[count]);

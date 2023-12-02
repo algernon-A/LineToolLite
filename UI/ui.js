@@ -57,13 +57,13 @@ if (typeof lineTool.adjustRotation !== 'function') {
 if (typeof lineTool.fenceMode !== 'function') {
     lineTool.fenceMode = function () {
         var fenceModeButton = document.getElementById("line-tool-fence");
+        var randomRotationButton = document.getElementById("line-tool-rotation-random");
         if (fenceModeButton.classList.contains("selected")) {
             fenceModeButton.classList.remove("selected");
             engine.trigger('SetLineToolFenceMode', false);
 
             // Show spacing and random rotation button.
             lineTool.setSpacingVisibility(true);
-            let randomRotationButton = document.getElementById("line-tool-rotation-random");
             lineTool.setButtonVisibility(randomRotationButton, true);
 
             // Show rotation, but only if random rotation is not set.
@@ -76,7 +76,6 @@ if (typeof lineTool.fenceMode !== 'function') {
             engine.trigger('SetLineToolFenceMode', true);
 
             // Disable random rotation and hide button.
-            let randomRotationButton = document.getElementById("line-tool-rotation-random");
             randomRotationButton.classList.remove("selected");
             engine.trigger('SetLineToolRandomRotation', false);
             lineTool.setButtonVisibility(randomRotationButton, false);

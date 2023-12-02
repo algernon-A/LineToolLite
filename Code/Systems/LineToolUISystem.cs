@@ -79,7 +79,7 @@ namespace LineTool
                     ExecuteScript(_uiView, "if (lineTool == null) var lineTool = {};");
 
                     // Set initial variables in UI (multiply spacing by 10 for accuracy conversion).
-                    ExecuteScript(_uiView, $"lineTool.spacing = {_lineToolSystem.Spacing * 10};");
+                    ExecuteScript(_uiView, $"lineTool.spacing = {_lineToolSystem.RawSpacing * 10};");
                     ExecuteScript(_uiView, $"lineTool.rotation = {_lineToolSystem.Rotation};");
 
                     // Attach our custom controls.
@@ -114,7 +114,7 @@ namespace LineTool
                     {
                         // Hide rotation and spacing buttons.
                         ExecuteScript(_uiView, $"document.getElementById(\"line-tool-fence\").classList.add(\"selected\");");
-                        ExecuteScript(_uiView, "let randomRotationButton = document.getElementById(\"line-tool-rotation-random\"); lineTool.setButtonVisibility(randomRotationButton, false);");
+                        ExecuteScript(_uiView, "lineTool.randomRotationButton = document.getElementById(\"line-tool-rotation-random\"); lineTool.setButtonVisibility(lineTool.randomRotationButton, false);");
                         ExecuteScript(_uiView, "lineTool.setRotationVisibility(false); lineTool.setSpacingVisibility(false);");
                     }
 

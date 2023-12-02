@@ -1,3 +1,7 @@
+1.0.4
+- Improve previewing and cursor handling.
+- Fix spacing setting not being reset after re-activating tool when fence mode is set.
+
 1.0.3
 - Add initial fence mode.
 

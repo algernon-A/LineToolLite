@@ -1,8 +1,8 @@
 # Cities Skylines 2 : Line Tool Lite
 - **Place objects in lines** - straight lines, curves, or circles.
-- **Fence mode** - automatically align objects end-to-end.
+- **Fence mode** - automatically align and place objects end-to-end.
 - **Accurate placement** - no worrying about imprecision.
-- Easily adjust **spacing** and **rotation** using the in-game tool UI.
+- Easily adjust **spacing** and **rotation** using the in-game tool UI (including random rotation for that natural look).
 - Live **previewing** included, so you can provisionally place a line and adjust spacing and/or rotation to see how it looks in real-time before making the final placement (or cancelling).
 - Displays **distances** and **angles** for fine-tuning.
 
@@ -20,7 +20,7 @@ Works on all types of objects - trees, shrubs, props.  You can even place simple
 - **Control-click** at the end will leave the line in preview mode; it's not fully placed yet so you can go and adjust the settings and see the results in real time.  When finished, **left-click** to place or **right-click** to cancel.
 
 ### Use the tool UI to:
-- Toggle **fence mode**.
+- Toggle **fence mode** - objects will be automatically aligned with the line direction and placed continuously end-to-end.
 - Toggle between **straight line**, **curved**, and **circle** modes.
 - Adjust **distances** using the arrow buttons - plain click for 1m increments, **shift-click** for 10m, **control-click** for 0.1m.
 - Select **random rotation** to have each object in the line have a different randomly-chosen rotation, or otherwise **manually adjust the rotation** for all items using the arrow buttons - plain click for 10-degree increments, **shift-click** for 90 degrees, **control-click** for 1 degree.
@@ -34,7 +34,6 @@ Works on all types of objects - trees, shrubs, props.  You can even place simple
 
 ## Installation
 1. Make sure that BepInEx 5 is installed.
-1. Make sure that you're **NOT** using HookUI or mods that use it (such as Unemployment Monitor, Extended Tooltip, City Monitor, or Vehicle Counter).
 1. Place the `LineTool` folder in the archive in your BepInEx `Plugins` folder.
 
 ## Support
@@ -62,7 +61,10 @@ As always, *never* trust a mod without publicly available source code!
 
 >And still be cautious about mods that *do* make their source available, but at least those mods are off to a better start by already treating you - the user - with at least a modicum of respect.
 
-### Disclaimers and legal
+### Modders
+Modders (and aspiring modders!), as always I'm available and happy to chat about what I've done and answer any questions, and also about how you can implement anything that I've done for your own mods.  Come grab me on the Cities: Skylines Modding Discord!
+
+## Disclaimers and legal
 The only authorized distribution platforms for this mod, or mods based substantially on the code of this mod, are the GitHub repo linked above, this Thunderstore.io upload, and Paradox Mods.  Any version or copy of this mod that you encounter elsewhere is most likely being used as a vector for malware and should be ignored.
 
 Downloading, installation, and use of this mod is at your own risk.
