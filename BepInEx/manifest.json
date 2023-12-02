@@ -1,6 +1,6 @@
 {
   "name": "Line_Tool_Lite",
-  "version_number": "1.0.3",
+  "version_number": "1.0.4",
   "website_url": "https://github.com/algernon-A/LineToolLite",
   "description": "Place objects in lines, curves, or circles",
   "dependencies": [
