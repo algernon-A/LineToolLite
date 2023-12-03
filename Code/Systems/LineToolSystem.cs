@@ -4,6 +4,7 @@
 
 namespace LineTool
 {
+    using System;
     using System.Reflection;
     using Colossal.Entities;
     using Colossal.Logging;
@@ -107,7 +108,9 @@ namespace LineTool
 
             set
             {
-                _spacing = value;
+                // Don't allow spacing to be set smaller than the smallest side of zBounds.
+                _spacing = (float)Math.Round(math.max(value, math.max(math.abs(_zBounds.max), math.abs(_zBounds.min) + 0.1f)), 1);
+                World.GetOrCreateSystemManaged<LineToolUISystem>().UpdateSpacing();
                 _dirty = true;
             }
         }

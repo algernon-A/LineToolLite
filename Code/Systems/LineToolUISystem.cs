@@ -40,6 +40,15 @@ namespace LineTool
         private string _injectedCSS;
 
         /// <summary>
+        ///  Updates the displayed spacing amount.
+        /// </summary>
+        internal void UpdateSpacing()
+        {
+            // Multiply spacing by 10 for accuracy conversion)
+            ExecuteScript(_uiView, $"if (lineTool != null) {{ lineTool.spacing = {_lineToolSystem.RawSpacing * 10}; if (lineTool.refreshSpacing != null) lineTool.refreshSpacing();}}");
+        }
+
+        /// <summary>
         /// Called when the system is created.
         /// </summary>
         protected override void OnCreate()
@@ -78,8 +87,7 @@ namespace LineTool
                     // Tool is now active but previously wasn't; ensure namespace.
                     ExecuteScript(_uiView, "if (lineTool == null) var lineTool = {};");
 
-                    // Set initial variables in UI (multiply spacing by 10 for accuracy conversion).
-                    ExecuteScript(_uiView, $"lineTool.spacing = {_lineToolSystem.RawSpacing * 10};");
+                    // Set initial rotation variable in UI (multiply spacing by 10 for accuracy conversion).
                     ExecuteScript(_uiView, $"lineTool.rotation = {_lineToolSystem.Rotation};");
 
                     // Attach our custom controls.
@@ -123,6 +131,9 @@ namespace LineTool
                     {
                         ExecuteScript(_uiView, "lineTool.addTreeControl();");
                     }
+
+                    // Set initial spacing.
+                    UpdateSpacing();
 
                     // Register event callbacks.
                     _eventHandles.Add(_uiView.RegisterForEvent("SetLineToolSpacing", (Action<float>)SetSpacing));

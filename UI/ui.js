@@ -26,6 +26,20 @@ if (typeof lineTool.adjustSpacing !== 'function') {
     }
 }
 
+// Function to update displayed spacing.
+if (typeof lineTool.refreshSpacing !== 'function') {
+    lineTool.refreshSpacing = function () {
+        if (lineTool.spacing == null) {
+            return;
+        }
+
+        var spacingField = document.getElementById("line-tool-spacing-field");
+        if (spacingField != null) {
+            document.getElementById("line-tool-spacing-field").innerHTML = (lineTool.spacing / 10) + " m";
+        }
+    }
+}
+
 // Function to adjust rotation.
 if (typeof lineTool.adjustRotation !== 'function') {
     lineTool.adjustRotation = function(event, adjustment) {
