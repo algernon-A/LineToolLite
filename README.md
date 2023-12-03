@@ -34,7 +34,7 @@ Works on all types of objects - trees, shrubs, props.  You can even place simple
 
 ## Installation
 1. Make sure that BepInEx 5 is installed.
-1. Place the `LineTool` folder in the archive in your BepInEx `Plugins` folder.
+1. Place the `LineToolLite` folder in the archive in your BepInEx `Plugins` folder.
 
 ## Support
 It's usually easiest to contact me at the [**Cities: Skylines modding Discord**](https://discord.gg/ZaH2zjtk), or I'm also contactable as u/algernon_A on the [Cities: Skylines modding Subreddit](https://www.reddit.com/r/CitiesSkylinesModding) (r/CitiesSkylinesModding).  You could also raise an issue on the GitHub.
