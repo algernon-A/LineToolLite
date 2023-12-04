@@ -94,11 +94,13 @@ namespace LineTool
         /// <param name="currentPos">Selection current position.</param>
         /// <param name="fenceMode">Set to <c>true</c> if fence mode is active.</param>
         /// <param name="spacing">Spacing setting.</param>
+        /// <param name="randomSpacing">Random spacing offset maximum.</param>
+        /// <param name="randomOffset">Random lateral offset maximum.</param>
         /// <param name="rotation">Rotation setting.</param>
         /// <param name="zBounds">Prefab zBounds.</param>
         /// <param name="pointList">List of points to populate.</param>
         /// <param name="heightData">Terrain height data reference.</param>
-        public virtual void CalculatePoints(float3 currentPos, bool fenceMode, float spacing, int rotation, Bounds1 zBounds, NativeList<PointData> pointList, ref TerrainHeightData heightData)
+        public virtual void CalculatePoints(float3 currentPos, bool fenceMode, float spacing, float randomSpacing, float randomOffset, int rotation, Bounds1 zBounds, NativeList<PointData> pointList, ref TerrainHeightData heightData)
         {
             // Don't do anything if we don't have a valid start point.
             if (!m_validStart)
@@ -107,13 +109,14 @@ namespace LineTool
             }
 
             // Calculate length.
-            float length = math.length(currentPos - m_startPos);
+            float3 difference = currentPos - m_startPos;
+            float length = math.length(difference);
+            System.Random random = new ((int)length * 1000);
 
             // Calculate applied rotation (in radians).
             float appliedRotation = math.radians(rotation);
             if (fenceMode)
             {
-                float3 difference = currentPos - m_startPos;
                 appliedRotation = math.atan2(difference.x, difference.z);
             }
 
@@ -126,7 +129,21 @@ namespace LineTool
             while (currentDistance < endLength)
             {
                 // Calculate interpolated point.
-                float3 thisPoint = math.lerp(m_startPos, currentPos, currentDistance / length);
+                float spacingAdjustment = 0f;
+                if (randomSpacing > 0f && !fenceMode)
+                {
+                    spacingAdjustment = (float)(random.NextDouble() * randomSpacing * 2f) - randomSpacing;
+                }
+
+                float3 thisPoint = math.lerp(m_startPos, currentPos, (currentDistance + spacingAdjustment) / length);
+
+                // Apply offset adjustment.
+                if (randomOffset > 0f && !fenceMode)
+                {
+                    float3 left = math.normalize(new float3(-difference.z, 0f, difference.x));
+                    thisPoint += left * ((float)(randomOffset * random.NextDouble() * 2f) - randomOffset);
+                }
+
                 thisPoint.y = TerrainUtils.SampleHeight(ref heightData, thisPoint);
 
                 // Add point to list.

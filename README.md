@@ -3,6 +3,7 @@
 - **Fence mode** - automatically align and place objects end-to-end.
 - **Accurate placement** - no worrying about imprecision.
 - Easily adjust **spacing** and **rotation** using the in-game tool UI (including random rotation for that natural look).
+- Optional **random position variation** can provide some natural irregularity.
 - Live **previewing** included, so you can provisionally place a line and adjust spacing and/or rotation to see how it looks in real-time before making the final placement (or cancelling).
 - Displays **distances** and **angles** for fine-tuning.
 
@@ -24,6 +25,10 @@ Works on all types of objects - trees, shrubs, props.  You can even place simple
 - Toggle between **straight line**, **curved**, and **circle** modes.
 - Adjust **distances** using the arrow buttons - plain click for 1m increments, **shift-click** for 10m, **control-click** for 0.1m.
 - Select **random rotation** to have each object in the line have a different randomly-chosen rotation, or otherwise **manually adjust the rotation** for all items using the arrow buttons - plain click for 10-degree increments, **shift-click** for 90 degrees, **control-click** for 1 degree.
+- Set **variable spacing** to more than zero to have a random (length-ways) offset applied to each item's spacing, up to the maximum distance specified - plain click for 1m increments, **shift-click** for 10m, **control-click** for 0.1m.
+- Set **variable offset** to more than zero to have a random sideways offset applied to each item, up to the maximum distance specified - plain click for 1m increments, **shift-click** for 10m, **control-click** for 0.1m.
+
+To remove variable spacing and/or offset, simply set the field(s) back to zero.  **Shift-clicking** (10m increments) can make this faster.
 
 ### To exit the tool:
 - Press **Escape**, or

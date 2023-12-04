@@ -83,11 +83,13 @@ namespace LineTool
         /// <param name="currentPos">Selection current position.</param>
         /// <param name="fenceMode">Set to <c>true</c> if fence mode is active.</param>
         /// <param name="spacing">Spacing setting.</param>
+        /// <param name="randomSpacing">Random spacing offset maximum.</param>
+        /// <param name="randomOffset">Random lateral offset maximum.</param>
         /// <param name="rotation">Rotation setting.</param>
         /// <param name="zBounds">Prefab zBounds.</param>
         /// <param name="pointList">List of points to populate.</param>
         /// <param name="heightData">Terrain height data reference.</param>
-        public override void CalculatePoints(float3 currentPos, bool fenceMode, float spacing, int rotation, Bounds1 zBounds, NativeList<PointData> pointList, ref TerrainHeightData heightData)
+        public override void CalculatePoints(float3 currentPos, bool fenceMode, float spacing, float randomSpacing, float randomOffset, int rotation, Bounds1 zBounds, NativeList<PointData> pointList, ref TerrainHeightData heightData)
         {
             // Don't do anything if we don't have valid start.
             if (!m_validStart)
@@ -98,7 +100,7 @@ namespace LineTool
             // If we have a valid start but no valid elbow, just draw a straight line.
             if (!m_validElbow)
             {
-                base.CalculatePoints(currentPos, fenceMode, spacing, rotation, zBounds, pointList, ref heightData);
+                base.CalculatePoints(currentPos, fenceMode, spacing, randomSpacing, randomOffset, rotation, zBounds, pointList, ref heightData);
                 return;
             }
 
@@ -108,11 +110,29 @@ namespace LineTool
             // Default rotation quaternion.
             quaternion qRotation = quaternion.Euler(0f, math.radians(rotation), 0f);
 
+            System.Random random = new ((int)(currentPos.x + currentPos.z) * 1000);
+
             float tFactor = 0f;
             while (tFactor < 1.0f)
             {
+                // Apply spacing randomization.
+                float adjustedT = tFactor;
+                if (randomSpacing > 0f && !fenceMode)
+                {
+                    float spacingAdjustment = (float)(random.NextDouble() * randomSpacing * 2f) - randomSpacing;
+                    adjustedT = spacingAdjustment < 0f ? BezierStepReverse(tFactor, spacingAdjustment) : BezierStep(tFactor, spacingAdjustment);
+                }
+
                 // Calculate point.
-                float3 thisPoint = MathUtils.Position(_thisBezier, tFactor);
+                float3 thisPoint = MathUtils.Position(_thisBezier, adjustedT);
+
+                // Apply offset randomization.
+                if (randomOffset > 0f && !fenceMode)
+                {
+                    float3 tangent = MathUtils.Tangent(_thisBezier, adjustedT);
+                    float3 left = math.normalize(new float3(-tangent.z, 0f, tangent.x));
+                    thisPoint += left * ((float)(randomOffset * random.NextDouble() * 2f) - randomOffset);
+                }
 
                 // Get next t factor.
                 tFactor = BezierStep(tFactor, spacing);
@@ -213,18 +233,19 @@ namespace LineTool
         }
 
         /// <summary>
-        /// Steps along a Bezier BACKWARDS from the end point, calculating the target t factor for the given spacing distance.
+        /// Steps along a Bezier BACKWARDS from the given t factor, calculating the target t factor for the given spacing distance.
         /// Code based on Alterran's PropLineTool (StepDistanceCurve, Utilities/PLTMath.cs).
         /// </summary>
+        /// <param name="tStart">Starting t factor.</param>
         /// <param name="distance">Distance to travel.</param>
         /// <returns>Target t factor.</returns>
-        private float BezierStepReverse(float distance)
+        private float BezierStepReverse(float tStart, float distance)
         {
             const float Tolerance = 0.001f;
             const float ToleranceSquared = Tolerance * Tolerance;
 
-            float tEnd = Travel(1, -distance);
-            float usedDistance = CubicBezierArcLengthXZGauss04(tEnd, 1.0f);
+            float tEnd = Travel(tStart, -distance);
+            float usedDistance = CubicBezierArcLengthXZGauss04(tEnd, tStart);
 
             // Twelve iteration maximum for performance and to prevent infinite loops.
             for (int i = 0; i < 12; ++i)
@@ -236,7 +257,7 @@ namespace LineTool
                     break;
                 }
 
-                usedDistance = CubicBezierArcLengthXZGauss04(tEnd, 1.0f);
+                usedDistance = CubicBezierArcLengthXZGauss04(tEnd, tStart);
                 tEnd -= (distance - usedDistance) / CubicSpeedXZ(tEnd);
             }
 

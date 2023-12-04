@@ -45,7 +45,7 @@ namespace LineTool
         internal void UpdateSpacing()
         {
             // Multiply spacing by 10 for accuracy conversion)
-            ExecuteScript(_uiView, $"if (lineTool != null) {{ lineTool.spacing = {_lineToolSystem.RawSpacing * 10}; if (lineTool.refreshSpacing != null) lineTool.refreshSpacing();}}");
+            ExecuteScript(_uiView, $"if (lineTool) {{ lineTool.spacing = {_lineToolSystem.RawSpacing * 10}; if (lineTool.refreshSpacing) lineTool.refreshSpacing();}}");
         }
 
         /// <summary>
@@ -87,8 +87,8 @@ namespace LineTool
                     // Tool is now active but previously wasn't; ensure namespace.
                     ExecuteScript(_uiView, "if (lineTool == null) var lineTool = {};");
 
-                    // Set initial rotation variable in UI (multiply spacing by 10 for accuracy conversion).
-                    ExecuteScript(_uiView, $"lineTool.rotation = {_lineToolSystem.Rotation};");
+                    // Set initial rotation and offset variables in UI (multiply distances by 10 for accuracy conversion).
+                    ExecuteScript(_uiView, $"lineTool.rotation = {_lineToolSystem.Rotation}; lineTool.randomSpacing = {_lineToolSystem.RandomSpacing * 10}; lineTool.randomOffset = {_lineToolSystem.RandomOffset * 10};");
 
                     // Attach our custom controls.
                     // Inject scripts.
@@ -117,13 +117,10 @@ namespace LineTool
                         ExecuteScript(_uiView, "lineTool.setRotationVisibility(false);");
                     }
 
-                    // Select fence mode button if needed.
+                    // Select fence mode button if needed and update visibility states.
                     if (_lineToolSystem.FenceMode)
                     {
-                        // Hide rotation and spacing buttons.
-                        ExecuteScript(_uiView, $"document.getElementById(\"line-tool-fence\").classList.add(\"selected\");");
-                        ExecuteScript(_uiView, "lineTool.randomRotationButton = document.getElementById(\"line-tool-rotation-random\"); lineTool.setButtonVisibility(lineTool.randomRotationButton, false);");
-                        ExecuteScript(_uiView, "lineTool.setRotationVisibility(false); lineTool.setSpacingVisibility(false);");
+                        ExecuteScript(_uiView, $"document.getElementById(\"line-tool-fence\").classList.add(\"selected\"); lineTool.setFenceVisibility(false);");
                     }
 
                     // Show tree control menu if tree control is active.
@@ -136,14 +133,17 @@ namespace LineTool
                     UpdateSpacing();
 
                     // Register event callbacks.
-                    _eventHandles.Add(_uiView.RegisterForEvent("SetLineToolSpacing", (Action<float>)SetSpacing));
                     _eventHandles.Add(_uiView.RegisterForEvent("SetLineToolFenceMode", (Action<bool>)SetFenceMode));
-                    _eventHandles.Add(_uiView.RegisterForEvent("SetLineToolRandomRotation", (Action<bool>)SetRandomRotation));
-                    _eventHandles.Add(_uiView.RegisterForEvent("SetLineToolRotation", (Action<int>)SetRotation));
                     _eventHandles.Add(_uiView.RegisterForEvent("SetStraightMode", (Action)SetStraightMode));
                     _eventHandles.Add(_uiView.RegisterForEvent("SetSimpleCurveMode", (Action)SetSimpleCurveMode));
                     _eventHandles.Add(_uiView.RegisterForEvent("SetCircleMode", (Action)SetCircleMode));
+                    _eventHandles.Add(_uiView.RegisterForEvent("SetLineToolSpacing", (Action<float>)SetSpacing));
+                    _eventHandles.Add(_uiView.RegisterForEvent("SetLineToolRandomRotation", (Action<bool>)SetRandomRotation));
+                    _eventHandles.Add(_uiView.RegisterForEvent("SetLineToolRotation", (Action<int>)SetRotation));
+                    _eventHandles.Add(_uiView.RegisterForEvent("SetLineToolRandomSpacing", (Action<float>)SetRandomSpacing));
+                    _eventHandles.Add(_uiView.RegisterForEvent("SetLineToolRandomOffset", (Action<float>)SetRandomOffset));
                     _eventHandles.Add(_uiView.RegisterForEvent("LineToolTreeControlUpdated", (Action)TreeControlUpdated));
+                    _eventHandles.Add(_uiView.RegisterForEvent("SetLineToolSpacing", (Action<float>)SetSpacing));
 
                     // Record current tool state.
                     _toolIsActive = true;
@@ -332,28 +332,10 @@ namespace LineTool
         }
 
         /// <summary>
-        /// Event callback to set current spacing.
-        /// </summary>
-        /// <param name="spacing">Value to set.</param>
-        private void SetSpacing(float spacing) => _lineToolSystem.Spacing = spacing;
-
-        /// <summary>
         /// Event callback to set fence mode.
         /// </summary>
         /// <param name="isActive">Value to set.</param>
         private void SetFenceMode(bool isActive) => _lineToolSystem.FenceMode = isActive;
-
-        /// <summary>
-        /// Event callback to set the random rotation override.
-        /// </summary>
-        /// <param name="isRandom">Value to set.</param>
-        private void SetRandomRotation(bool isRandom) => _lineToolSystem.RandomRotation = isRandom;
-
-        /// <summary>
-        /// Event callback to set current rotation.
-        /// </summary>
-        /// <param name="rotation">Value to set.</param>
-        private void SetRotation(int rotation) => _lineToolSystem.Rotation = rotation;
 
         /// <summary>
         /// Event callback to set straight line mode.
@@ -369,6 +351,36 @@ namespace LineTool
         /// Event callback to set circle mode.
         /// </summary>
         private void SetCircleMode() => _lineToolSystem.Mode = LineMode.Circle;
+
+        /// <summary>
+        /// Event callback to set current spacing.
+        /// </summary>
+        /// <param name="spacing">Value to set.</param>
+        private void SetSpacing(float spacing) => _lineToolSystem.Spacing = spacing;
+
+        /// <summary>
+        /// Event callback to set the random rotation override.
+        /// </summary>
+        /// <param name="isRandom">Value to set.</param>
+        private void SetRandomRotation(bool isRandom) => _lineToolSystem.RandomRotation = isRandom;
+
+        /// <summary>
+        /// Event callback to set current rotation.
+        /// </summary>
+        /// <param name="rotation">Value to set.</param>
+        private void SetRotation(int rotation) => _lineToolSystem.Rotation = rotation;
+
+        /// <summary>
+        /// Event callback to set the random spacing offset maximum.
+        /// </summary>
+        /// <param name="randomSpacing">Value to set.</param>
+        private void SetRandomSpacing(float randomSpacing) => _lineToolSystem.RandomSpacing = randomSpacing;
+
+        /// <summary>
+        /// Event callback to set the random lateral offset maximum.
+        /// </summary>
+        /// <param name="randomOffset">Value to set.</param>
+        private void SetRandomOffset(float randomOffset) => _lineToolSystem.RandomOffset = randomOffset;
 
         /// <summary>
         /// Event callback to update Tree Control settings.

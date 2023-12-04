@@ -73,6 +73,8 @@ namespace LineTool
         private float _spacing = 20f;
         private bool _randomRotation = false;
         private int _rotation = 0;
+        private float _randomSpacing = 0f;
+        private float _randomOffset = 0f;
         private bool _dirty = false;
 
         // Tree Controller integration.
@@ -137,6 +139,32 @@ namespace LineTool
             set
             {
                 _randomRotation = value;
+                _dirty = true;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the random spacing offset maximum.
+        /// </summary>
+        internal float RandomSpacing
+        {
+            get => _randomSpacing;
+            set
+            {
+                _randomSpacing = value;
+                _dirty = true;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the random lateral offset maximum.
+        /// </summary>
+        internal float RandomOffset
+        {
+            get => _randomOffset;
+            set
+            {
+                _randomOffset = value;
                 _dirty = true;
             }
         }
@@ -488,7 +516,7 @@ namespace LineTool
 
             // If we got here we're (re)calculating points.
             _points.Clear();
-            _mode.CalculatePoints(position, _fenceMode, Spacing, _rotation, _zBounds, _points, ref _terrainHeightData);
+            _mode.CalculatePoints(position, _fenceMode, Spacing, RandomSpacing, RandomOffset, _rotation, _zBounds, _points, ref _terrainHeightData);
 
             // Step along length and place objects.
             int count = 0;

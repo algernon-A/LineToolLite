@@ -41,8 +41,10 @@ namespace LineTool
 
             // Initialize logger.
             Log = LogManager.GetLogger(ModName);
+#if DEBUG
             Log.Info("setting logging level to Debug");
             Log.effectivenessLevel = Level.Debug;
+#endif
 
             Log.Info("loading");
         }
