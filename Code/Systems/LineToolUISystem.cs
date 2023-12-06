@@ -11,6 +11,7 @@ namespace LineTool
     using System.Text;
     using cohtml.Net;
     using Colossal.Logging;
+    using Game;
     using Game.Prefabs;
     using Game.SceneFlow;
     using Game.Tools;
@@ -64,7 +65,7 @@ namespace LineTool
             _lineToolSystem = World.GetOrCreateSystemManaged<LineToolSystem>();
 
             // Read injection data.
-            _injectedHTML = ReadHTML("LineToolLite.UI.ui.html", "div.className = \"tool-options-panel_Se6\"; div.id = \"line-tool-panel\"; document.getElementsByClassName(\"tool-side-column_l9i\")[0].appendChild(div);");
+            _injectedHTML = ReadHTML("LineToolLite.UI.ui.html", "lineTool.div.className = \"tool-options-panel_Se6\"; lineTool.div.id = \"line-tool-panel\"; lineTool.targetParent = document.getElementsByClassName(\"tool-side-column_l9i\"); if (lineTool.targetParent.length == 0) lineTool.targetParent = document.getElementsByClassName(\"editor-toolbar_i1J\"); if (lineTool.targetParent.length != 0) lineTool.targetParent[0].appendChild(lineTool.div);");
             _injectedJS = ReadJS("LineToolLite.UI.ui.js");
             _injectedCSS = ReadCSS("LineToolLite.UI.ui.css");
 
@@ -199,7 +200,7 @@ namespace LineTool
                 if (!string.IsNullOrEmpty(css))
                 {
                     // Return JavaScript code with CSS embedded.
-                    return $"var style = document.createElement('style'); style.type = 'text/css'; style.innerHTML = \"{EscapeToJavaScript(css)}\"; document.head.appendChild(style);";
+                    return $"lineTool.style = document.createElement('style'); lineTool.style.type = 'text/css'; lineTool.style.innerHTML = \"{EscapeToJavaScript(css)}\"; document.head.appendChild(lineTool.style);";
                 }
             }
             catch (Exception e)
@@ -218,7 +219,7 @@ namespace LineTool
         /// <param name="fileName">Embedded UI file name to read.</param>
         /// <param name="injectionPostfix">Injection JavaScript postfix text.</param>
         /// <returns>JavaScript <see cref="string"/> embedding the HTML (<c>null</c> if empty or error).</returns>
-        private string ReadHTML(string fileName, string injectionPostfix = "document.body.appendChild(div);")
+        private string ReadHTML(string fileName, string injectionPostfix)
         {
             try
             {
@@ -229,7 +230,7 @@ namespace LineTool
                 if (!string.IsNullOrEmpty(html))
                 {
                     // Return JavaScript code with HTML embedded.
-                    return $"var div = document.createElement('div'); div.innerHTML = \"{EscapeToJavaScript(html)}\"; {injectionPostfix}";
+                    return $"lineTool.div = document.createElement('div'); lineTool.div.innerHTML = \"{EscapeToJavaScript(html)}\"; {injectionPostfix}";
                 }
             }
             catch (Exception e)
