@@ -59,7 +59,7 @@ namespace LineTool
 
             // Activate systems.
             updateSystem.UpdateAt<LineToolSystem>(SystemUpdatePhase.ToolUpdate);
-            updateSystem.UpdateAfter<LineToolUISystem>(SystemUpdatePhase.UIUpdate);
+            updateSystem.UpdateAt<LineToolUISystem>(SystemUpdatePhase.UIUpdate);
             updateSystem.UpdateAt<LineToolTooltipSystem>(SystemUpdatePhase.UITooltip);
 
             // Add mod UI icons to UI resource handler.

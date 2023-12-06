@@ -87,26 +87,11 @@ namespace LineTool
         public override string toolID => "Line Tool";
 
         /// <summary>
-        /// Gets the raw spacing setting.
-        /// </summary>
-        internal float RawSpacing => _spacing;
-
-        /// <summary>
         /// Gets or sets the effective line spacing.
         /// </summary>
         internal float Spacing
         {
-            get
-            {
-                // Use calculated spacing for fence mode.
-                if (_fenceMode)
-                {
-                    return _zBounds.max - _zBounds.min;
-                }
-
-                // Not fence mode - use manual spacing.
-                return _spacing;
-            }
+            get => _spacing;
 
             set
             {
@@ -116,6 +101,11 @@ namespace LineTool
                 _dirty = true;
             }
         }
+
+        /// <summary>
+        /// Gets the effective spacing value, taking into account fence mode.
+        /// </summary>
+        internal float EffectiveSpacing => _fenceMode ? _zBounds.max - _zBounds.min : _spacing;
 
         /// <summary>
         /// Gets or sets a value indicating whether fence mode is active.
@@ -311,6 +301,16 @@ namespace LineTool
         }
 
         /// <summary>
+        /// Elevation-up key handler; used to increment spacing.
+        /// </summary>
+        public override void ElevationUp() => Spacing = _spacing + 1;
+
+        /// <summary>
+        /// Elevation-down key handler; used to decrement spacing.
+        /// </summary>
+        public override void ElevationDown() => Spacing = _spacing - 1;
+
+        /// <summary>
         /// Refreshes all displayed prefabs to align with current Tree Control settings.
         /// </summary>
         internal void RefreshTreeControl()
@@ -451,8 +451,15 @@ namespace LineTool
                         // We're placing items - remove highlighting.
                         foreach (Entity previewEntity in _previewEntities)
                         {
-                            EntityManager.RemoveComponent<Highlighted>(previewEntity);
-                            EntityManager.AddComponent<Updated>(previewEntity);
+                            if (EntityManager.HasComponent<Overridden>(previewEntity))
+                            {
+                                EntityManager.AddComponent<Deleted>(previewEntity);
+                            }
+                            else
+                            {
+                                EntityManager.RemoveComponent<Highlighted>(previewEntity);
+                                EntityManager.AddComponent<Updated>(previewEntity);
+                            }
                         }
 
                         // Clear preview.
@@ -475,13 +482,15 @@ namespace LineTool
                 if (!_mode.HasStart)
                 {
                     // Create cursor entity if none yet exists.
-                    if (_cursorEntity == Entity.Null)
+                    if (_cursorEntity != Entity.Null)
                     {
-                        _cursorEntity = CreateEntity();
-
-                        // Highlight cursor entity.
-                        EntityManager.AddComponent<Highlighted>(_cursorEntity);
+                        EntityManager.AddComponent<Deleted>(_cursorEntity);
                     }
+
+                    _cursorEntity = CreateEntity();
+
+                    // Highlight cursor entity.
+                    EntityManager.AddComponent<Highlighted>(_cursorEntity);
 
                     // Update cursor entity position.
                     EntityManager.SetComponentData(_cursorEntity, new Transform { m_Position = position, m_Rotation = GetEffectiveRotation(position) });
@@ -516,10 +525,17 @@ namespace LineTool
 
             // If we got here we're (re)calculating points.
             _points.Clear();
-            _mode.CalculatePoints(position, _fenceMode, Spacing, RandomSpacing, RandomOffset, _rotation, _zBounds, _points, ref _terrainHeightData);
+            _mode.CalculatePoints(position, _fenceMode, EffectiveSpacing, RandomSpacing, RandomOffset, _rotation, _zBounds, _points, ref _terrainHeightData);
 
-            // Step along length and place objects.
-            int count = 0;
+            // Clear all preview entities.
+            foreach (Entity entity in _previewEntities)
+            {
+                EntityManager.AddComponent<Deleted>(entity);
+            }
+
+            _previewEntities.Clear();
+
+            // Step along length and place preview objects.
             foreach (PointData thisPoint in _points)
             {
                 UnityEngine.Random.InitState((int)(thisPoint.Position.x + thisPoint.Position.y + thisPoint.Position.z));
@@ -531,42 +547,12 @@ namespace LineTool
                     m_Rotation = _randomRotation ? GetEffectiveRotation(thisPoint.Position) : thisPoint.Rotation,
                 };
 
-                // Create new entity if required.
-                if (count >= _previewEntities.Length)
-                {
-                    // Create new entity.
-                    Entity newEntity = CreateEntity();
-
-                    // Set entity location.
-                    EntityManager.SetComponentData(newEntity, transformData);
-                    EntityManager.AddComponent<Highlighted>(newEntity);
-                    _previewEntities.Add(newEntity);
-                }
-                else
-                {
-                    // Otherwise, use existing entity.
-                    EntityManager.SetComponentData(_previewEntities[count], transformData);
-                    EntityManager.AddComponent<BatchesUpdated>(_previewEntities[count]);
-
-                    // Ensure any trees are still adults.
-                    EnsureTreeState(_previewEntities[count]);
-                }
-
-                // Increment distance.
-                ++count;
-            }
-
-            // Clear any excess entities.
-            if (count < _previewEntities.Length)
-            {
-                int startCount = count;
-                while (count < _previewEntities.Length)
-                {
-                    EntityManager.AddComponent<Deleted>(_previewEntities[count++]);
-                }
-
-                // Remove excess range from list
-                _previewEntities.RemoveRange(startCount, count - startCount);
+                // Create new entity.
+                Entity newEntity = CreateEntity();
+                EntityManager.SetComponentData(newEntity, transformData);
+                EntityManager.AddComponent<Highlighted>(newEntity);
+                EntityManager.AddComponent<Updated>(newEntity);
+                _previewEntities.Add(newEntity);
             }
 
             return inputDeps;

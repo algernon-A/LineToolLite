@@ -45,7 +45,7 @@ namespace LineTool
         internal void UpdateSpacing()
         {
             // Multiply spacing by 10 for accuracy conversion)
-            ExecuteScript(_uiView, $"if (lineTool) {{ lineTool.spacing = {_lineToolSystem.RawSpacing * 10}; if (lineTool.refreshSpacing) lineTool.refreshSpacing();}}");
+            ExecuteScript(_uiView, $"if (lineTool) {{ lineTool.spacing = {_lineToolSystem.Spacing * 10}; if (lineTool.refreshSpacing) lineTool.refreshSpacing();}}");
         }
 
         /// <summary>

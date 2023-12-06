@@ -1,3 +1,6 @@
+1.0.7
+- Improve previewing and cursor handling (again).
+
 1.0.6
 - Add optional random spacing and lateral offset functions.
 
