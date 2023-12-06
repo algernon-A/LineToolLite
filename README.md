@@ -6,6 +6,7 @@
 - Optional **random position variation** can provide some natural irregularity.
 - Live **previewing** included, so you can provisionally place a line and adjust spacing and/or rotation to see how it looks in real-time before making the final placement (or cancelling).
 - Displays **distances** and **angles** for fine-tuning.
+- Works both **in-game** and **in the editor**.
 
 Works on all types of objects - trees, shrubs, props.  You can even place simple buildings and even vehicles (for amusement value only - see limitations below).
 
