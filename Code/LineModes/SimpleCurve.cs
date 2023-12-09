@@ -19,8 +19,10 @@ namespace LineTool
     public class SimpleCurve : LineBase
     {
         // Current elbow point.
-        private bool m_validElbow = false;
-        private float3 m_elbowPoint;
+        private bool _validElbow = false;
+        private bool _validPreviousElbow = false;
+        private float3 _elbowPoint;
+        private float3 _previousElbowPoint;
 
         // Calculated Bezier.
         private Bezier4x3 _thisBezier;
@@ -37,7 +39,7 @@ namespace LineTool
         /// <summary>
         /// Gets a value indicating whether we're ready to place (we have enough control positions).
         /// </summary>
-        public override bool HasAllPoints => m_validStart & m_validElbow;
+        public override bool HasAllPoints => m_validStart & _validElbow;
 
         /// <summary>
         /// Handles a mouse click.
@@ -55,10 +57,10 @@ namespace LineTool
             }
 
             // Otherwise, if no valid elbow point, record this as the elbow point.
-            if (!m_validElbow)
+            if (!_validElbow)
             {
-                m_elbowPoint = position;
-                m_validElbow = true;
+                _elbowPoint = ConstrainPos(position);
+                _validElbow = true;
                 return false;
             }
 
@@ -74,7 +76,9 @@ namespace LineTool
         {
             // Update new starting location to the previous end point and clear elbow.
             m_startPos = position;
-            m_validElbow = false;
+            _validElbow = false;
+            _previousElbowPoint = _elbowPoint;
+            _validPreviousElbow = true;
         }
 
         /// <summary>
@@ -98,14 +102,15 @@ namespace LineTool
             }
 
             // If we have a valid start but no valid elbow, just draw a straight line.
-            if (!m_validElbow)
+            if (!_validElbow)
             {
-                base.CalculatePoints(currentPos, fenceMode, spacing, randomSpacing, randomOffset, rotation, zBounds, pointList, ref heightData);
+                // Constrain as required.
+                base.CalculatePoints(ConstrainPos(currentPos), fenceMode, spacing, randomSpacing, randomOffset, rotation, zBounds, pointList, ref heightData);
                 return;
             }
 
             // Calculate Bezier.
-            _thisBezier = NetUtils.FitCurve(new Line3.Segment(m_startPos, m_elbowPoint), new Line3.Segment(currentPos, m_elbowPoint));
+            _thisBezier = NetUtils.FitCurve(new Line3.Segment(m_startPos, _elbowPoint), new Line3.Segment(currentPos, _elbowPoint));
 
             // Default rotation quaternion.
             quaternion qRotation = quaternion.Euler(0f, math.radians(rotation), 0f);
@@ -163,23 +168,23 @@ namespace LineTool
             if (m_validStart)
             {
                 // Draw an elbow overlay if we've got valid starting and elbow positions.
-                if (m_validElbow)
+                if (_validElbow)
                 {
                     // Calculate lines.
-                    Line3.Segment line1 = new (m_startPos, m_elbowPoint);
-                    Line3.Segment line2 = new (m_elbowPoint, currentPos);
+                    Line3.Segment line1 = new (m_startPos, _elbowPoint);
+                    Line3.Segment line2 = new (_elbowPoint, currentPos);
 
                     // Draw lines.
-                    DrawDashedLine(m_startPos, m_elbowPoint, line1, overlayBuffer, tooltips);
-                    DrawDashedLine(m_elbowPoint, currentPos, line2, overlayBuffer, tooltips);
+                    DrawDashedLine(m_startPos, _elbowPoint, line1, overlayBuffer, tooltips);
+                    DrawDashedLine(_elbowPoint, currentPos, line2, overlayBuffer, tooltips);
 
                     // Draw angle.
                     DrawAngleIndicator(line1, line2, 8f, 8f, overlayBuffer, tooltips);
                 }
                 else
                 {
-                    // Initial position only; just draw a straight line.
-                    base.DrawOverlay(currentPos, overlayBuffer, tooltips);
+                    // Initial position only; just draw a straight line (constrained if required).
+                    base.DrawOverlay(ConstrainPos(currentPos), overlayBuffer, tooltips);
                 }
             }
         }
@@ -189,15 +194,34 @@ namespace LineTool
         /// </summary>
         public override void Reset()
         {
-            // Only clear elbow if we have one.
-            if (m_validElbow)
+            // Only clear elbow, if we have one.
+            if (_validElbow)
             {
-                m_validElbow = false;
+                _validElbow = false;
             }
             else
             {
+                // Otherwise, reset entire state.
+                _validPreviousElbow = false;
                 base.Reset();
             }
+        }
+
+        /// <summary>
+        /// Applies any active constraints the given current cursor world position.
+        /// /// </summary>
+        /// <param name="currentPos">Current cursor world position.</param>
+        /// <returns>Constrained cursor world position.</returns>
+        private float3 ConstrainPos(float3 currentPos)
+        {
+            // Constrain to continuous curve.
+            if (m_validStart && !_validElbow && _validPreviousElbow)
+            {
+                // Use closest point on infinite line projected from previous curve end tangent.
+                return math.project(currentPos - _previousElbowPoint, m_startPos - _previousElbowPoint) + _previousElbowPoint;
+            }
+
+            return currentPos;
         }
 
         /// <summary>
