@@ -85,15 +85,15 @@ namespace LineTool
         /// Calculates the points to use based on this mode.
         /// </summary>
         /// <param name="currentPos">Selection current position.</param>
-        /// <param name="fenceMode">Set to <c>true</c> if fence mode is active.</param>
-        /// <param name="spacing">Spacing setting.</param>
+        /// <param name="spacingMode">Active spacing mode.</param>
+        /// <param name="spacing">Spacing distance.</param>
         /// <param name="randomSpacing">Random spacing offset maximum.</param>
         /// <param name="randomOffset">Random lateral offset maximum.</param>
         /// <param name="rotation">Rotation setting.</param>
         /// <param name="zBounds">Prefab zBounds.</param>
         /// <param name="pointList">List of points to populate.</param>
         /// <param name="heightData">Terrain height data reference.</param>
-        public override void CalculatePoints(float3 currentPos, bool fenceMode, float spacing, float randomSpacing, float randomOffset, int rotation, Bounds1 zBounds, NativeList<PointData> pointList, ref TerrainHeightData heightData)
+        public override void CalculatePoints(float3 currentPos, SpacingMode spacingMode, float spacing, float randomSpacing, float randomOffset, int rotation, Bounds1 zBounds, NativeList<PointData> pointList, ref TerrainHeightData heightData)
         {
             // Don't do anything if we don't have valid start.
             if (!m_validStart)
@@ -105,24 +105,34 @@ namespace LineTool
             if (!_validElbow)
             {
                 // Constrain as required.
-                base.CalculatePoints(ConstrainPos(currentPos), fenceMode, spacing, randomSpacing, randomOffset, rotation, zBounds, pointList, ref heightData);
+                base.CalculatePoints(ConstrainPos(currentPos), spacingMode, spacing, randomSpacing, randomOffset, rotation, zBounds, pointList, ref heightData);
                 return;
             }
 
             // Calculate Bezier.
             _thisBezier = NetUtils.FitCurve(new Line3.Segment(m_startPos, _elbowPoint), new Line3.Segment(currentPos, _elbowPoint));
 
+            // Calculate even full-length spacing if needed.
+            float adjustedSpacing = spacing;
+            float length = MathUtils.Length(_thisBezier);
+            if (spacingMode == SpacingMode.FullLength)
+            {
+                adjustedSpacing = length / math.round(length / spacing);
+            }
+
             // Default rotation quaternion.
             quaternion qRotation = quaternion.Euler(0f, math.radians(rotation), 0f);
 
+            // Randomizer.
             System.Random random = new ((int)(currentPos.x + currentPos.z) * 1000);
 
             float tFactor = 0f;
+            float distanceTravelled = 0f;
             while (tFactor < 1.0f)
             {
                 // Apply spacing randomization.
                 float adjustedT = tFactor;
-                if (randomSpacing > 0f && !fenceMode)
+                if (randomSpacing > 0f && spacingMode != SpacingMode.FenceMode)
                 {
                     float spacingAdjustment = (float)(random.NextDouble() * randomSpacing * 2f) - randomSpacing;
                     adjustedT = spacingAdjustment < 0f ? BezierStepReverse(tFactor, spacingAdjustment) : BezierStep(tFactor, spacingAdjustment);
@@ -132,7 +142,7 @@ namespace LineTool
                 float3 thisPoint = MathUtils.Position(_thisBezier, adjustedT);
 
                 // Apply offset randomization.
-                if (randomOffset > 0f && !fenceMode)
+                if (randomOffset > 0f && spacingMode != SpacingMode.FenceMode)
                 {
                     float3 tangent = MathUtils.Tangent(_thisBezier, adjustedT);
                     float3 left = math.normalize(new float3(-tangent.z, 0f, tangent.x));
@@ -140,16 +150,27 @@ namespace LineTool
                 }
 
                 // Get next t factor.
-                tFactor = BezierStep(tFactor, spacing);
+                tFactor = BezierStep(tFactor, adjustedSpacing);
+                distanceTravelled += adjustedSpacing;
 
                 // Calculate applied rotation for fence mode.
-                if (fenceMode)
+                if (spacingMode == SpacingMode.FenceMode)
                 {
                     float3 difference = MathUtils.Position(_thisBezier, tFactor) - thisPoint;
                     qRotation = quaternion.Euler(0f, math.atan2(difference.x, difference.z), 0f);
                 }
 
                 // Calculate terrain height.
+                thisPoint.y = TerrainUtils.SampleHeight(ref heightData, thisPoint);
+
+                // Add point to list.
+                pointList.Add(new PointData { Position = thisPoint, Rotation = qRotation, });
+            }
+
+            // Final item for full-length mode if required (if there was a distance overshoot).
+            if (spacingMode == SpacingMode.FullLength && distanceTravelled < length + adjustedSpacing)
+            {
+                float3 thisPoint = currentPos;
                 thisPoint.y = TerrainUtils.SampleHeight(ref heightData, thisPoint);
 
                 // Add point to list.
@@ -209,7 +230,7 @@ namespace LineTool
 
         /// <summary>
         /// Applies any active constraints the given current cursor world position.
-        /// /// </summary>
+        /// </summary>
         /// <param name="currentPos">Current cursor world position.</param>
         /// <returns>Constrained cursor world position.</returns>
         private float3 ConstrainPos(float3 currentPos)

@@ -1,3 +1,6 @@
+1.0.10
+- Add fixed-length even spacing mode (will evenly space out objects along the full length of the line with spacing as close as possible to the specified distance).
+
 1.0.9
 - Continuing a curve with shift-click now also locks the starting tangent of the new curve (continuous curves).
 

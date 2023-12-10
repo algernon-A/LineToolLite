@@ -11,7 +11,6 @@ namespace LineTool
     using System.Text;
     using cohtml.Net;
     using Colossal.Logging;
-    using Game;
     using Game.Prefabs;
     using Game.SceneFlow;
     using Game.Tools;
@@ -119,9 +118,14 @@ namespace LineTool
                     }
 
                     // Select fence mode button if needed and update visibility states.
-                    if (_lineToolSystem.FenceMode)
+                    if (_lineToolSystem.CurrentSpacingMode == SpacingMode.FenceMode)
                     {
                         ExecuteScript(_uiView, $"document.getElementById(\"line-tool-fence\").classList.add(\"selected\"); lineTool.setFenceVisibility(false);");
+                    }
+                    else if (_lineToolSystem.CurrentSpacingMode == SpacingMode.FullLength)
+                    {
+                        // Otherwise, select fixed-length even spacing button if needed.
+                        ExecuteScript(_uiView, $"document.getElementById(\"line-tool-measure-even\").classList.add(\"selected\");");
                     }
 
                     // Show tree control menu if tree control is active.
@@ -139,6 +143,7 @@ namespace LineTool
                     _eventHandles.Add(_uiView.RegisterForEvent("SetSimpleCurveMode", (Action)SetSimpleCurveMode));
                     _eventHandles.Add(_uiView.RegisterForEvent("SetCircleMode", (Action)SetCircleMode));
                     _eventHandles.Add(_uiView.RegisterForEvent("SetLineToolSpacing", (Action<float>)SetSpacing));
+                    _eventHandles.Add(_uiView.RegisterForEvent("SetLineToolMeasureEven", (Action<bool>)SetFixedLength));
                     _eventHandles.Add(_uiView.RegisterForEvent("SetLineToolRandomRotation", (Action<bool>)SetRandomRotation));
                     _eventHandles.Add(_uiView.RegisterForEvent("SetLineToolRotation", (Action<int>)SetRotation));
                     _eventHandles.Add(_uiView.RegisterForEvent("SetLineToolRandomSpacing", (Action<float>)SetRandomSpacing));
@@ -336,7 +341,7 @@ namespace LineTool
         /// Event callback to set fence mode.
         /// </summary>
         /// <param name="isActive">Value to set.</param>
-        private void SetFenceMode(bool isActive) => _lineToolSystem.FenceMode = isActive;
+        private void SetFenceMode(bool isActive) => _lineToolSystem.CurrentSpacingMode = isActive ? SpacingMode.FenceMode : SpacingMode.Manual;
 
         /// <summary>
         /// Event callback to set straight line mode.
@@ -358,6 +363,12 @@ namespace LineTool
         /// </summary>
         /// <param name="spacing">Value to set.</param>
         private void SetSpacing(float spacing) => _lineToolSystem.Spacing = spacing;
+
+        /// <summary>
+        /// Event callback to set fixed-length even spacing mode.
+        /// </summary>
+        /// <param name="isActive">Value to set.</param>
+        private void SetFixedLength(bool isActive) => _lineToolSystem.CurrentSpacingMode = isActive ? SpacingMode.FullLength : SpacingMode.Manual;
 
         /// <summary>
         /// Event callback to set the random rotation override.

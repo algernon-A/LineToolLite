@@ -92,15 +92,15 @@ namespace LineTool
         /// Calculates the points to use based on this mode.
         /// </summary>
         /// <param name="currentPos">Selection current position.</param>
-        /// <param name="fenceMode">Set to <c>true</c> if fence mode is active.</param>
-        /// <param name="spacing">Spacing setting.</param>
+        /// <param name="spacingMode">Active spacing mode.</param>
+        /// <param name="spacing">Spacing distance.</param>
         /// <param name="randomSpacing">Random spacing offset maximum.</param>
         /// <param name="randomOffset">Random lateral offset maximum.</param>
         /// <param name="rotation">Rotation setting.</param>
         /// <param name="zBounds">Prefab zBounds.</param>
         /// <param name="pointList">List of points to populate.</param>
         /// <param name="heightData">Terrain height data reference.</param>
-        public virtual void CalculatePoints(float3 currentPos, bool fenceMode, float spacing, float randomSpacing, float randomOffset, int rotation, Bounds1 zBounds, NativeList<PointData> pointList, ref TerrainHeightData heightData)
+        public virtual void CalculatePoints(float3 currentPos, SpacingMode spacingMode, float spacing, float randomSpacing, float randomOffset, int rotation, Bounds1 zBounds, NativeList<PointData> pointList, ref TerrainHeightData heightData)
         {
             // Don't do anything if we don't have a valid start point.
             if (!m_validStart)
@@ -115,22 +115,29 @@ namespace LineTool
 
             // Calculate applied rotation (in radians).
             float appliedRotation = math.radians(rotation);
-            if (fenceMode)
+            if (spacingMode == SpacingMode.FenceMode)
             {
                 appliedRotation = math.atan2(difference.x, difference.z);
             }
 
             // Rotation quaternion.
-            quaternion rotationQuaternion = quaternion.Euler(0f, appliedRotation, 0f);
+            quaternion qRotation = quaternion.Euler(0f, appliedRotation, 0f);
+
+            // Calculate even full-length spacing if needed.
+            float adjustedSpacing = spacing;
+            if (spacingMode == SpacingMode.FullLength)
+            {
+                adjustedSpacing = length / math.round(length / spacing);
+            }
 
             // Create points.
-            float currentDistance = fenceMode ? -zBounds.min : 0f;
-            float endLength = fenceMode ? length - zBounds.max : length;
+            float currentDistance = spacingMode == SpacingMode.FenceMode ? -zBounds.min : 0f;
+            float endLength = spacingMode == SpacingMode.FenceMode ? length - zBounds.max : length;
             while (currentDistance < endLength)
             {
                 // Calculate interpolated point.
                 float spacingAdjustment = 0f;
-                if (randomSpacing > 0f && !fenceMode)
+                if (randomSpacing > 0f && spacingMode != SpacingMode.FenceMode)
                 {
                     spacingAdjustment = (float)(random.NextDouble() * randomSpacing * 2f) - randomSpacing;
                 }
@@ -138,7 +145,7 @@ namespace LineTool
                 float3 thisPoint = math.lerp(m_startPos, currentPos, (currentDistance + spacingAdjustment) / length);
 
                 // Apply offset adjustment.
-                if (randomOffset > 0f && !fenceMode)
+                if (randomOffset > 0f && spacingMode != SpacingMode.FenceMode)
                 {
                     float3 left = math.normalize(new float3(-difference.z, 0f, difference.x));
                     thisPoint += left * ((float)(randomOffset * random.NextDouble() * 2f) - randomOffset);
@@ -147,8 +154,18 @@ namespace LineTool
                 thisPoint.y = TerrainUtils.SampleHeight(ref heightData, thisPoint);
 
                 // Add point to list.
-                pointList.Add(new PointData { Position = thisPoint, Rotation = rotationQuaternion, });
-                currentDistance += spacing;
+                pointList.Add(new PointData { Position = thisPoint, Rotation = qRotation, });
+                currentDistance += adjustedSpacing;
+            }
+
+            // Final item for full-length mode if required (if there was a distance overshoot).
+            if (spacingMode == SpacingMode.FullLength && currentDistance < length + adjustedSpacing)
+            {
+                float3 thisPoint = currentPos;
+                thisPoint.y = TerrainUtils.SampleHeight(ref heightData, thisPoint);
+
+                // Add point to list.
+                pointList.Add(new PointData { Position = thisPoint, Rotation = qRotation, });
             }
         }
 

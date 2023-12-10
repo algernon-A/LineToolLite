@@ -85,6 +85,21 @@ if (typeof lineTool.refreshSpacing !== 'function') {
     }
 }
 
+// Function to implement fixed-length even spacing.
+if (typeof lineTool.measureEven !== 'function') {
+    lineTool.measureEven = function () {
+        let measureEvenButton = document.getElementById("line-tool-measure-even");
+        if (measureEvenButton.classList.contains("selected")) {
+            measureEvenButton.classList.remove("selected");
+            engine.trigger('SetLineToolMeasureEven', false);
+        }
+        else {
+            measureEvenButton.classList.add("selected");
+            engine.trigger('SetLineToolMeasureEven', true);
+        }
+    }
+}
+
 // Function to implement random rotation selection.
 if (typeof lineTool.randomRotation !== 'function') {
     lineTool.randomRotation = function () {
@@ -272,6 +287,7 @@ document.getElementById("line-tool-straight").onclick = lineTool.handleStraightM
 document.getElementById("line-tool-simplecurve").onclick = lineTool.handleSimpleCurveMode;
 document.getElementById("line-tool-circle").onclick = lineTool.handleCircleMode;
 
+document.getElementById("line-tool-measure-even").onmousedown = () => { lineTool.measureEven(); }
 document.getElementById("line-tool-spacing-down").onmousedown = (event) => { lineTool.adjustSpacing(event, -1); }
 document.getElementById("line-tool-spacing-up").onmousedown = (event) => { lineTool.adjustSpacing(event, 1); }
 

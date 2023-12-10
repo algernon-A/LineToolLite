@@ -24,7 +24,8 @@ Works on all types of objects - trees, shrubs, props.  You can even place simple
 ### Use the tool UI to:
 - Toggle **fence mode** - objects will be automatically aligned with the line direction and placed continuously end-to-end.
 - Toggle between **straight line**, **curved**, and **circle** modes.
-- Adjust **distances** using the arrow buttons - plain click for 1m increments, **shift-click** for 10m, **control-click** for 0.1m.
+- Adjust **distances** using the arrow buttons - plain click for 1m increments, **shift-click** for 10m, **control-click** for 0.1m.  For circle mode, spacing will be rounded *up* to the nearest distance that will ensure an even placement around the circle.
+- Select **fixed-length even spacing mode** - when this is enabled objects will be spaced out evenly over the entire length of the line, with spacing *as close as possible* to the spacing distance you have set.  For circle mode, this will cause spacing to be rounded to the *nearest number* (up or down) that will ensure an even placement around the circle (default circle rounding is always *up*).
 - Select **random rotation** to have each object in the line have a different randomly-chosen rotation, or otherwise **manually adjust the rotation** for all items using the arrow buttons - plain click for 10-degree increments, **shift-click** for 90 degrees, **control-click** for 1 degree.
 - Set **variable spacing** to more than zero to have a random (length-ways) offset applied to each item's spacing, up to the maximum distance specified - plain click for 1m increments, **shift-click** for 10m, **control-click** for 0.1m.
 - Set **variable offset** to more than zero to have a random sideways offset applied to each item, up to the maximum distance specified - plain click for 1m increments, **shift-click** for 10m, **control-click** for 0.1m.

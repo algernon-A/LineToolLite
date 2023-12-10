@@ -37,7 +37,6 @@ namespace LineTool
 
         // Line calculations.
         private readonly NativeList<PointData> _points = new (Allocator.Persistent);
-        private bool _fenceMode = false;
         private bool _fixedPreview = false;
         private float3 _fixedPos;
         private Random _random = new ();
@@ -70,6 +69,7 @@ namespace LineTool
         private LineBase _mode;
 
         // Tool settings.
+        private SpacingMode _spacingMode = SpacingMode.Manual;
         private float _spacing = 20f;
         private bool _randomRotation = false;
         private int _rotation = 0;
@@ -105,17 +105,17 @@ namespace LineTool
         /// <summary>
         /// Gets the effective spacing value, taking into account fence mode.
         /// </summary>
-        internal float EffectiveSpacing => _fenceMode ? _zBounds.max - _zBounds.min : _spacing;
+        internal float EffectiveSpacing => _spacingMode == SpacingMode.FenceMode ? _zBounds.max - _zBounds.min : _spacing;
 
         /// <summary>
-        /// Gets or sets a value indicating whether fence mode is active.
+        /// Gets or sets the current spacing mode.
         /// </summary>
-        internal bool FenceMode
+        internal SpacingMode CurrentSpacingMode
         {
-            get => _fenceMode;
+            get => _spacingMode;
             set
             {
-                _fenceMode = value;
+                _spacingMode = value;
                 _dirty = true;
             }
         }
@@ -481,7 +481,7 @@ namespace LineTool
                 // Update cursor entity if we haven't got an initial position set.
                 if (!_mode.HasStart)
                 {
-                    // Create cursor entity if none yet exists.
+                    // Delete any existing cursor entity and create a new one.
                     if (_cursorEntity != Entity.Null)
                     {
                         EntityManager.AddComponent<Deleted>(_cursorEntity);
@@ -508,6 +508,14 @@ namespace LineTool
                     _cursorEntity = Entity.Null;
                 }
             }
+            else
+            {
+                // No valid raycast - hide cursor.
+                if (_cursorEntity != Entity.Null)
+                {
+                    EntityManager.AddComponent<Deleted>(_cursorEntity);
+                }
+            }
 
             // Render any overlay.
             _mode.DrawOverlay(position, _overlayBuffer, _tooltips);
@@ -525,7 +533,7 @@ namespace LineTool
 
             // If we got here we're (re)calculating points.
             _points.Clear();
-            _mode.CalculatePoints(position, _fenceMode, EffectiveSpacing, RandomSpacing, RandomOffset, _rotation, _zBounds, _points, ref _terrainHeightData);
+            _mode.CalculatePoints(position, _spacingMode, EffectiveSpacing, RandomSpacing, RandomOffset, _rotation, _zBounds, _points, ref _terrainHeightData);
 
             // Clear all preview entities.
             foreach (Entity entity in _previewEntities)
