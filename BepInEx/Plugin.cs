@@ -14,7 +14,7 @@ namespace LineTool
     /// <summary>
     /// BepInEx plugin to substitute for IMod support.
     /// </summary>
-    [BepInPlugin(GUID, "Line Tool Lite", "1.0.10")]
+    [BepInPlugin(GUID, "Line Tool Lite", "1.1.0")]
     [HarmonyPatch]
     public class Plugin : BaseUnityPlugin
     {

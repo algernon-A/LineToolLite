@@ -12,6 +12,7 @@ namespace LineTool
     using Unity.Mathematics;
     using UnityEngine;
     using static Game.Rendering.GuideLinesSystem;
+    using static LineToolSystem;
 
     /// <summary>
     /// Simple curve placement mode.
@@ -105,7 +106,8 @@ namespace LineTool
             if (!_validElbow)
             {
                 // Constrain as required.
-                base.CalculatePoints(ConstrainPos(currentPos), spacingMode, spacing, randomSpacing, randomOffset, rotation, zBounds, pointList, ref heightData);
+                m_endPos = ConstrainPos(currentPos);
+                base.CalculatePoints(m_endPos, spacingMode, spacing, randomSpacing, randomOffset, rotation, zBounds, pointList, ref heightData);
                 return;
             }
 
@@ -176,15 +178,17 @@ namespace LineTool
                 // Add point to list.
                 pointList.Add(new PointData { Position = thisPoint, Rotation = qRotation, });
             }
+
+            // Record end position for overlays.
+            m_endPos = currentPos;
         }
 
         /// <summary>
         /// Draws any applicable overlay.
         /// </summary>
-        /// <param name="currentPos">Current cursor world position.</param>
         /// <param name="overlayBuffer">Overlay buffer.</param>
         /// <param name="tooltips">Tooltip list.</param>
-        public override void DrawOverlay(float3 currentPos, OverlayRenderSystem.Buffer overlayBuffer, NativeList<TooltipInfo> tooltips)
+        public override void DrawOverlay(OverlayRenderSystem.Buffer overlayBuffer, NativeList<TooltipInfo> tooltips)
         {
             if (m_validStart)
             {
@@ -193,11 +197,11 @@ namespace LineTool
                 {
                     // Calculate lines.
                     Line3.Segment line1 = new (m_startPos, _elbowPoint);
-                    Line3.Segment line2 = new (_elbowPoint, currentPos);
+                    Line3.Segment line2 = new (_elbowPoint, m_endPos);
 
                     // Draw lines.
                     DrawDashedLine(m_startPos, _elbowPoint, line1, overlayBuffer, tooltips);
-                    DrawDashedLine(_elbowPoint, currentPos, line2, overlayBuffer, tooltips);
+                    DrawDashedLine(_elbowPoint, m_endPos, line2, overlayBuffer, tooltips);
 
                     // Draw angle.
                     DrawAngleIndicator(line1, line2, 8f, 8f, overlayBuffer, tooltips);
@@ -205,8 +209,25 @@ namespace LineTool
                 else
                 {
                     // Initial position only; just draw a straight line (constrained if required).
-                    base.DrawOverlay(ConstrainPos(currentPos), overlayBuffer, tooltips);
+                    base.DrawOverlay(overlayBuffer, tooltips);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Draws point overlays.
+        /// </summary>
+        /// <param name="overlayBuffer">Overlay buffer.</param>
+        public override void DrawPointOverlays(OverlayRenderSystem.Buffer overlayBuffer)
+        {
+            base.DrawPointOverlays(overlayBuffer);
+
+            // Draw elbow point.
+            if (_validElbow)
+            {
+                Color softCyan = Color.cyan;
+                softCyan.a *= 0.1f;
+                overlayBuffer.DrawCircle(Color.cyan, softCyan, 0.3f, 0, new float2(0f, 1f), _elbowPoint, PointRadius * 2f);
             }
         }
 
@@ -225,6 +246,44 @@ namespace LineTool
                 // Otherwise, reset entire state.
                 _validPreviousElbow = false;
                 base.Reset();
+            }
+        }
+
+        /// <summary>
+        /// Checks to see if a click should initiate point dragging.
+        /// </summary>
+        /// <param name="position">Click position in world space.</param>
+        /// <returns>Drag mode.</returns>
+        internal override DragMode CheckDragHit(float3 position)
+        {
+            // Start and end points.
+            DragMode mode = base.CheckDragHit(position);
+
+            // If no hit from base (start and end points), check for elbow point hit.
+            if (mode == DragMode.None && _validElbow && math.distancesq(position, _elbowPoint) < (PointRadius * PointRadius))
+            {
+                return DragMode.ElbowPos;
+            }
+
+            return mode;
+        }
+
+        /// <summary>
+        /// Handles dragging action.
+        /// </summary>
+        /// <param name="dragMode">Dragging mode.</param>
+        /// <param name="position">New position.</param>
+        internal override void HandleDrag(DragMode dragMode, float3 position)
+        {
+            if (dragMode == DragMode.ElbowPos)
+            {
+                // Update elbow point.
+                _elbowPoint = position;
+            }
+            else
+            {
+                // Other points.
+                base.HandleDrag(dragMode, position);
             }
         }
 

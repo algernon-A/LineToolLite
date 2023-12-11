@@ -19,7 +19,7 @@ Works on all types of objects - trees, shrubs, props.  You can even place simple
 - **Left-click** where you want the line to begin, and **left-click again** at the desired endpoint to place the objects (curves require three clicks - start, guidepoint, and end).
 - **Right-click** at any time to cancel placement.
 - **Shift-click** at the end will start a new line placement at the exact same spot where the previous line ended.
-- **Control-click** at the end will leave the line in preview mode; it's not fully placed yet so you can go and adjust the settings and see the results in real time.  When finished, **left-click** to place or **right-click** to cancel.
+- **Control-click** at the end will leave the line in preview mode; it's not fully placed yet so you can go and adjust the settings and see the results in real time.  You can also drag the highlighted control points (blue circles) to adjust the line positioning (**control-clicking** to start dragging will ensure that you don't accidentally trigger placement if you miss the point circles, but regular clicking works as well). When finished, **left-click** to place or **right-click** to cancel.
 
 ### Use the tool UI to:
 - Toggle **fence mode** - objects will be automatically aligned with the line direction and placed continuously end-to-end.

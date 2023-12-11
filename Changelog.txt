@@ -1,3 +1,6 @@
+1.1.0
+- Add dragging of line control points in fixed preview mode.
+
 1.0.10
 - Add fixed-length even spacing mode (will evenly space out objects along the full length of the line with spacing as close as possible to the specified distance).
 

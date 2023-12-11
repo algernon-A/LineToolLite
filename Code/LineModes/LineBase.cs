@@ -11,6 +11,7 @@ namespace LineTool
     using Unity.Mathematics;
     using UnityEngine;
     using static Game.Rendering.GuideLinesSystem;
+    using static LineToolSystem;
 
     /// <summary>
     /// Line placement mode.
@@ -18,6 +19,11 @@ namespace LineTool
     [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:Fields should be private", Justification = "Protected fields")]
     public abstract class LineBase
     {
+        /// <summary>
+        /// Selection radius of points.
+        /// </summary>
+        protected const float PointRadius = 8f;
+
         /// <summary>
         /// Indicates whether a valid starting position has been recorded.
         /// </summary>
@@ -27,6 +33,11 @@ namespace LineTool
         /// Records the current selection start position.
         /// </summary>
         protected float3 m_startPos;
+
+        /// <summary>
+        /// Records the current selection end position.
+        /// </summary>
+        protected float3 m_endPos;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LineBase"/> class.
@@ -167,21 +178,36 @@ namespace LineTool
                 // Add point to list.
                 pointList.Add(new PointData { Position = thisPoint, Rotation = qRotation, });
             }
+
+            // Record end position for overlays.
+            m_endPos = currentPos;
         }
 
         /// <summary>
         /// Draws any applicable overlay.
         /// </summary>
-        /// <param name="currentPos">Current cursor world position.</param>
         /// <param name="overlayBuffer">Overlay buffer.</param>
         /// <param name="tooltips">Tooltip list.</param>
-        public virtual void DrawOverlay(float3 currentPos, OverlayRenderSystem.Buffer overlayBuffer, NativeList<TooltipInfo> tooltips)
+        public virtual void DrawOverlay(OverlayRenderSystem.Buffer overlayBuffer, NativeList<TooltipInfo> tooltips)
         {
             // Don't draw overlay if we don't have a valid start.
             if (m_validStart)
             {
-                DrawDashedLine(m_startPos, currentPos, new Line3.Segment(m_startPos, currentPos), overlayBuffer, tooltips);
+                DrawDashedLine(m_startPos, m_endPos, new Line3.Segment(m_startPos, m_endPos), overlayBuffer, tooltips);
             }
+        }
+
+        /// <summary>
+        /// Draws point overlays.
+        /// </summary>
+        /// <param name="overlayBuffer">Overlay buffer.</param>
+        public virtual void DrawPointOverlays(OverlayRenderSystem.Buffer overlayBuffer)
+        {
+            Color softCyan = Color.cyan;
+            softCyan.a *= 0.1f;
+
+            overlayBuffer.DrawCircle(Color.cyan, softCyan, 0.3f, 0, new float2(0f, 1f), m_startPos, PointRadius * 2f);
+            overlayBuffer.DrawCircle(Color.cyan, softCyan, 0.3f, 0, new float2(0f, 1f), m_endPos, PointRadius * 2f);
         }
 
         /// <summary>
@@ -190,6 +216,42 @@ namespace LineTool
         public virtual void Reset()
         {
             m_validStart = false;
+        }
+
+        /// <summary>
+        /// Checks to see if a click should initiate point dragging.
+        /// </summary>
+        /// <param name="position">Click position in world space.</param>
+        /// <returns>Drag mode.</returns>
+        internal virtual DragMode CheckDragHit(float3 position)
+        {
+            if (math.distancesq(position, m_startPos) < (PointRadius * PointRadius))
+            {
+                // Start point.
+                return DragMode.StartPos;
+            }
+            else if (math.distancesq(position, m_endPos) < (PointRadius * PointRadius))
+            {
+                // End point.
+                return DragMode.EndPos;
+            }
+
+            // No hit.
+            return DragMode.None;
+        }
+
+        /// <summary>
+        /// Handles dragging action.
+        /// </summary>
+        /// <param name="dragMode">Dragging mode.</param>
+        /// <param name="position">New position.</param>
+        internal virtual void HandleDrag(DragMode dragMode, float3 position)
+        {
+            // Drag start point.
+            if (dragMode == DragMode.StartPos)
+            {
+                m_startPos = position;
+            }
         }
 
         /// <summary>

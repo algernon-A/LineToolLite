@@ -82,6 +82,9 @@ namespace LineTool
                 // Add point to list.
                 pointList.Add(new PointData { Position = thisPoint, Rotation = quaternion.Euler(0f, math.radians(rotation) - i, 0f), });
             }
+
+            // Record end position for overlays.
+            m_endPos = currentPos;
         }
 
         /// <summary>

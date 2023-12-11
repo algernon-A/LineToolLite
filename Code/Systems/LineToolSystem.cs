@@ -65,8 +65,9 @@ namespace LineTool
         private InputAction _keepBuildingAction;
 
         // Mode.
+as        private LineBase _mode;
         private LineMode _currentMode;
-        private LineBase _mode;
+        private DragMode _dragMode = DragMode.None;
 
         // Tool settings.
         private SpacingMode _spacingMode = SpacingMode.Manual;
@@ -80,6 +81,32 @@ namespace LineTool
         // Tree Controller integration.
         private ToolBaseSystem _treeControllerTool;
         private PropertyInfo _nextTreeState = null;
+
+        /// <summary>
+        /// Point dragging mode.
+        /// </summary>
+        internal enum DragMode
+        {
+            /// <summary>
+            /// No dragging.
+            /// </summary>
+            None = 0,
+
+            /// <summary>
+            /// Dragging the line's start position.
+            /// </summary>
+            StartPos,
+
+            /// <summary>
+            /// Dragging the line's end position.
+            /// </summary>
+            EndPos,
+
+            /// <summary>
+            /// Dragging the line's elbow position.
+            /// </summary>
+            ElbowPos,
+        }
 
         /// <summary>
         /// Gets the tool's ID string.
@@ -411,6 +438,32 @@ namespace LineTool
                 _terrainHeightData = _terrainSystem.GetHeightData();
                 position.y = TerrainUtils.SampleHeight(ref _terrainHeightData, position);
 
+                // Handle any dragging.
+                if (_dragMode != DragMode.None)
+                {
+                    if (_applyAction.WasReleasedThisFrame() || _fixedPreviewAction.WasReleasedThisFrame())
+                    {
+                        // Cancel dragging.
+                        _dragMode = DragMode.None;
+                    }
+                    else
+                    {
+                        // Drag end point.
+                        if (_dragMode == DragMode.EndPos)
+                        {
+                            position = _raycastPoint.m_HitPosition;
+                            _fixedPos = position;
+                        }
+                        else
+                        {
+                            // Handle dragging for other points via line mode instance.
+                            _mode.HandleDrag(_dragMode, _raycastPoint.m_HitPosition);
+                        }
+
+                        _dirty = true;
+                    }
+                }
+
                 // Check for and perform any cancellation.
                 if (_cancelAction.WasPressedThisFrame())
                 {
@@ -424,6 +477,7 @@ namespace LineTool
                     }
 
                     _previewEntities.Clear();
+                    _dragMode = DragMode.None;
 
                     return inputDeps;
                 }
@@ -431,8 +485,23 @@ namespace LineTool
                 // If no cancellation, handle any fixed preview action if we're ready to place.
                 else if (_fixedPreviewAction.WasPressedThisFrame() && _mode.HasAllPoints)
                 {
-                    _fixedPreview = true;
-                    _fixedPos = position;
+                    // Are we already in fixed preview mode?
+                    if (_fixedPreview)
+                    {
+                        // Already in fixed preview mode - check for dragging hits.
+                        _dragMode = _mode.CheckDragHit(_raycastPoint.m_HitPosition);
+                        if (_dragMode != DragMode.None)
+                        {
+                            // If dragging, has started, then we're done here.
+                            return inputDeps;
+                        }
+                    }
+                    else
+                    {
+                        // Activate fixed preview mode and fix current position.
+                        _fixedPreview = true;
+                        _fixedPos = position;
+                    }
                 }
 
                 // Handle apply action if no other actions.
@@ -441,6 +510,14 @@ namespace LineTool
                     // Were we in fixed state?
                     if (_fixedPreview)
                     {
+                        // Check for dragging hits.
+                        _dragMode = _mode.CheckDragHit(_raycastPoint.m_HitPosition);
+                        if (_dragMode != DragMode.None)
+                        {
+                            // If dragging, has started, then we're done here.
+                            return inputDeps;
+                        }
+
                         // Yes - cancel fixed preview.
                         _fixedPreview = false;
                     }
@@ -518,7 +595,13 @@ namespace LineTool
             }
 
             // Render any overlay.
-            _mode.DrawOverlay(position, _overlayBuffer, _tooltips);
+            _mode.DrawOverlay(_overlayBuffer, _tooltips);
+
+            // Overlay control points.
+            if (_fixedPreview)
+            {
+                _mode.DrawPointOverlays(_overlayBuffer);
+            }
 
             // Check for position change or update needed.
             if (!_dirty && position.x == _previousPos.x && position.z == _previousPos.y)
