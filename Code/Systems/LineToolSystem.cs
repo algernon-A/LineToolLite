@@ -65,7 +65,7 @@ namespace LineTool
         private InputAction _keepBuildingAction;
 
         // Mode.
-as        private LineBase _mode;
+        private LineBase _mode;
         private LineMode _currentMode;
         private DragMode _dragMode = DragMode.None;
 
@@ -313,19 +313,7 @@ as        private LineBase _mode;
         /// </summary>
         /// <param name="prefab">Prefab to set.</param>
         /// <returns><c>true</c> if a prefab is currently selected, otherwise <c>false</c>.</returns>
-        public override bool TrySetPrefab(PrefabBase prefab)
-        {
-            // Check for eligible prefab.
-            if (prefab is ObjectPrefab objectPrefab)
-            {
-                // Eligible - set it.
-                SelectedPrefab = objectPrefab;
-                return true;
-            }
-
-            // If we got here this isn't an eligible prefab.
-            return false;
-        }
+        public override bool TrySetPrefab(PrefabBase prefab) => false;
 
         /// <summary>
         /// Elevation-up key handler; used to increment spacing.

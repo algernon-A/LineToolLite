@@ -193,11 +193,16 @@ if (typeof lineTool.adjustRandomOffset !== 'function') {
 
 // Function to show the Tree Control age panel.
 if (typeof lineTool.addTreeControl !== 'function') {
-    lineTool.addTreeControl = function(event, adjustment) {
-        if (typeof buildTreeAgeItem == 'function') {
-            let modeLine = document.getElementById("line-tool-mode");
-            buildTreeAgeItem(modeLine, "afterend");
-            document.getElementById("YYTC-change-age-buttons-panel").onclick = function () { engine.trigger('LineToolTreeControlUpdated') };
+    lineTool.addTreeControl = function (event, adjustment) {
+        try {
+            if (typeof yyTreeController != 'undefined' && typeof yyTreeController.buildTreeAgeItem == 'function') {
+                let modeLine = document.getElementById("line-tool-mode");
+                yyTreeController.buildTreeAgeItem(modeLine, "afterend");
+                document.getElementById("YYTC-change-age-buttons-panel").onclick = function () { engine.trigger('LineToolTreeControlUpdated') };
+            }
+        }
+        catch {
+            // Don't do anything.
         }
     }
 }
