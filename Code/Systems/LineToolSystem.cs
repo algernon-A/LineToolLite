@@ -9,6 +9,8 @@ namespace LineTool
     using Colossal.Entities;
     using Colossal.Logging;
     using Colossal.Mathematics;
+    using Colossal.Serialization.Entities;
+    using Game;
     using Game.Common;
     using Game.Input;
     using Game.Objects;
@@ -380,6 +382,16 @@ namespace LineTool
             hotKey.AddCompositeBinding("ButtonWithOneModifier").With("Modifier", "<Keyboard>/ctrl").With("Button", "<Keyboard>/l");
             hotKey.performed += EnableTool;
             hotKey.Enable();
+        }
+
+        /// <summary>
+        /// Called by the game when loading is complete.
+        /// </summary>
+        /// <param name="purpose">Loading purpose.</param>
+        /// <param name="mode">Current game mode.</param>
+        protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
+        {
+            base.OnGameLoadingComplete(purpose, mode);
 
             // Try to get tree controller tool.
             if (World.GetOrCreateSystemManaged<ToolSystem>().tools.Find(x => x.toolID.Equals("Tree Controller Tool")) is ToolBaseSystem treeControllerTool)
@@ -546,23 +558,30 @@ namespace LineTool
                 // Update cursor entity if we haven't got an initial position set.
                 if (!_mode.HasStart)
                 {
-                    // Delete any existing cursor entity and create a new one.
-                    if (_cursorEntity != Entity.Null)
+                    // Don't update if the cursor hasn't moved.
+                    if (position.x != _previousPos.x || position.z != _previousPos.z)
                     {
-                        EntityManager.AddComponent<Deleted>(_cursorEntity);
+                        // Delete any existing cursor entity and create a new one.
+                        if (_cursorEntity != Entity.Null)
+                        {
+                            EntityManager.AddComponent<Deleted>(_cursorEntity);
+                        }
+
+                        _cursorEntity = CreateEntity();
+
+                        // Highlight cursor entity.
+                        EntityManager.AddComponent<Highlighted>(_cursorEntity);
+
+                        // Update cursor entity position.
+                        EntityManager.SetComponentData(_cursorEntity, new Transform { m_Position = position, m_Rotation = GetEffectiveRotation(position) });
+                        EntityManager.AddComponent<BatchesUpdated>(_cursorEntity);
+
+                        // Ensure cursor entity tree state.
+                        EnsureTreeState(_cursorEntity);
+
+                        // Update previous position.
+                        _previousPos = position;
                     }
-
-                    _cursorEntity = CreateEntity();
-
-                    // Highlight cursor entity.
-                    EntityManager.AddComponent<Highlighted>(_cursorEntity);
-
-                    // Update cursor entity position.
-                    EntityManager.SetComponentData(_cursorEntity, new Transform { m_Position = position, m_Rotation = GetEffectiveRotation(position) });
-                    EntityManager.AddComponent<BatchesUpdated>(_cursorEntity);
-
-                    // Ensure cursor entity tree state.
-                    EnsureTreeState(_cursorEntity);
 
                     return inputDeps;
                 }

@@ -1,5 +1,8 @@
+1.1.2
+- Additional updates for Tree Controller integration.
+
 1.1.1
-- Update Tree Controller integration
+- Update Tree Controller integration.
 
 1.1.0
 - Add dragging of line control points in fixed preview mode.
