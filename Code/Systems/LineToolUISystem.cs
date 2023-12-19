@@ -1,5 +1,7 @@
 ﻿// <copyright file="LineToolUISystem.cs" company="algernon (K. Algernon A. Sheppard)">
 // Copyright (c) algernon (K. Algernon A. Sheppard). All rights reserved.
+// Licensed under the Apache Licence, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
+// See LICENSE.txt file in the project root for full license information.
 // </copyright>
 
 namespace LineTool
@@ -46,6 +48,14 @@ namespace LineTool
         {
             // Multiply spacing by 10 for accuracy conversion)
             ExecuteScript(_uiView, $"if (lineTool) {{ lineTool.spacing = {_lineToolSystem.Spacing * 10}; if (lineTool.refreshSpacing) lineTool.refreshSpacing();}}");
+        }
+
+        /// <summary>
+        /// Clears any displayed tooltip.
+        /// </summary>
+        internal void ClearTooltip()
+        {
+            ExecuteScript(_uiView, "if (lineTool) {{ lineTool.hideTooltip(); }}");
         }
 
         /// <summary>
@@ -210,11 +220,11 @@ namespace LineTool
             }
             catch (Exception e)
             {
-                _log.Error(e, "exception reading CSS file " + fileName);
+                _log.Error(e, $"exception reading CSS file {fileName}");
             }
 
             // If we got here, something went wrong.; return null.
-            _log.Error("failed to read embedded CSS file " + fileName);
+            _log.Error($"failed to read embedded CSS file {fileName}");
             return null;
         }
 
@@ -240,11 +250,11 @@ namespace LineTool
             }
             catch (Exception e)
             {
-                _log.Error(e, "exception reading embedded HTML file " + fileName);
+                _log.Error(e, $"exception reading embedded HTML file {fileName}");
             }
 
             // If we got here, something went wrong.; return null.
-            _log.Error("failed to read embedded HTML file " + fileName);
+            _log.Error($"failed to read embedded HTML file {fileName}");
             return null;
         }
 
@@ -269,11 +279,11 @@ namespace LineTool
             }
             catch (Exception e)
             {
-                _log.Error(e, "exception reading embedded JavaScript file " + fileName);
+                _log.Error(e, $"exception reading embedded JavaScript file {fileName}");
             }
 
             // If we got here, something went wrong; return null.
-            _log.Error("failed to read embedded JavaScript file " + fileName);
+            _log.Error($"failed to read embedded JavaScript file {fileName}");
             return null;
         }
 
@@ -295,7 +305,7 @@ namespace LineTool
             }
             catch (Exception e)
             {
-                _log.Error(e, "exception reading embedded UI file " + fileName);
+                _log.Error(e, $"exception reading embedded UI file {fileName}");
             }
 
             return null;

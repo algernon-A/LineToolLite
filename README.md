@@ -7,6 +7,7 @@
 - Live **previewing** included, so you can provisionally place a line and adjust spacing and/or rotation to see how it looks in real-time before making the final placement (or cancelling).
 - Displays **distances** and **angles** for fine-tuning.
 - Works both **in-game** and **in the editor**.
+- Includes integration with yenyang's excellent **[Tree Controller](https://github.com/yenyang/Tree_Controller_BepInEx)** mod.
 
 Works on all types of objects - trees, shrubs, props.  You can even place simple buildings and even vehicles (for amusement value only - see limitations below).
 
@@ -72,7 +73,7 @@ As always, *never* trust a mod without publicly available source code!
 Modders (and aspiring modders!), as always I'm available and happy to chat about what I've done and answer any questions, and also about how you can implement anything that I've done for your own mods.  Come grab me on the Cities: Skylines Modding Discord!
 
 ## Disclaimers and legal
-The only authorized distribution platforms for this mod, or mods based substantially on the code of this mod, are the GitHub repo linked above, this Thunderstore.io upload, and Paradox Mods (that's the *actual* Paradox Mods at mods.paradoxplaza.com, not the **scam and malware site paradoxmods.net** which is explicitly NOT licensed to distribute any of my work, or works derived from my work).  Any version or copy of this mod that you encounter elsewhere is most likely being used as a vector for malware and should be ignored.
+The only authorized distribution platforms for this mod, or mods based substantially on the code of this mod, are the GitHub repo linked above, this Thunderstore.io upload, and Paradox Mods (that's the *actual* Paradox Mods at mods.paradoxplaza.com, not the **scam and malware site paradoxmods net** which is explicitly NOT licensed to distribute any of my work, or works derived from my work).  Any version or copy of this mod that you encounter elsewhere is most likely being used as a vector for malware and should be ignored.
 
 Downloading, installation, and use of this mod is at your own risk.
 

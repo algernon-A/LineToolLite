@@ -1,5 +1,7 @@
 // <copyright file="ui.js" company="algernon (K. Algernon A. Sheppard)">
 // Copyright (c) algernon (K. Algernon A. Sheppard). All rights reserved.
+// Licensed under the Apache Licence, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
+// See LICENSE.txt file in the project root for full license information.
 // </copyright>
 
 
@@ -280,6 +282,116 @@ if (typeof lineTool.setButtonVisibility !== 'function') {
     }
 }
 
+// Function to show a tooltip, creating if necessary.
+if (typeof lineTool.showTooltip !== 'function') {
+    lineTool.showTooltip = function (parent, tooltipKey) {
+        
+        if (!lineTool.tooltip) {
+            lineTool.tooltip = document.createElement("div");
+            lineTool.tooltip.style.visibility = "hidden";
+            lineTool.tooltip.classList.add("balloon_qJY", "balloon_H23", "up_ehW", "center_hug", "anchored-balloon_AYp", "up_el0");
+            let boundsDiv = document.createElement("div");
+            boundsDiv.classList.add("bounds__AO");
+            let containerDiv = document.createElement("div");
+            containerDiv.classList.add("container_zgM", "container_jfe");
+            let contentDiv = document.createElement("div");
+            contentDiv.classList.add("content_A82", "content_JQV");
+            let arrowDiv = document.createElement("div");
+            arrowDiv.classList.add("arrow_SVb", "arrow_Xfn");
+            let broadDiv = document.createElement("div");
+            lineTool.tooltipTitle = document.createElement("div");
+            lineTool.tooltipTitle.classList.add("title_lCJ");
+            let paraDiv = document.createElement("div");
+            paraDiv.classList.add("paragraphs_nbD", "description_dNa");
+            lineTool.tooltipPara = document.createElement("p");
+            lineTool.tooltipPara.setAttribute("cohinline", "cohinline");
+
+            paraDiv.appendChild(lineTool.tooltipPara);
+            broadDiv.appendChild(lineTool.tooltipTitle);
+            broadDiv.appendChild(paraDiv);
+            containerDiv.appendChild(arrowDiv);
+            contentDiv.appendChild(broadDiv);
+            boundsDiv.appendChild(containerDiv);
+            boundsDiv.appendChild(contentDiv);
+            lineTool.tooltip.appendChild(boundsDiv);
+
+            document.getElementsByClassName("game-main-screen_TRK")[0].appendChild(lineTool.tooltip);
+        }
+
+        // Set text and position.
+        lineTool.tooltipTitle.innerHTML = engine.translate("LINETOOL." + tooltipKey);
+        lineTool.tooltipPara.innerHTML = engine.translate("LINETOOL_DESCRIPTION." + tooltipKey);
+        lineTool.setTooltipPos(parent);
+
+        // Set visibility tracking to prevent race conditions with popup delay.
+        lineTool.tooltipVisibility = "visible";
+
+        // Slightly delay popup to prevent premature activation and to ensure layout is ready.
+        window.setTimeout(function () { lineTool.setTooltipPos(parent) }, 25);
+    }
+}
+
+// Function to adjust the position of a tooltip and make visible.
+if (typeof lineTool.setTooltipPos !== 'function') {
+    lineTool.setTooltipPos = function (parent) {
+        if (!lineTool.tooltip) {
+            return;
+        }
+
+        let tooltipRect = lineTool.tooltip.getBoundingClientRect();
+        let parentRect = parent.getBoundingClientRect();
+        let xPos = parentRect.left + ((parentRect.width - tooltipRect.width) / 2);
+        let yPos = parentRect.top - tooltipRect.height;
+        lineTool.tooltip.setAttribute("style", "left:" + xPos + "px; top: " + yPos + "px; --posY: " + yPos + "px; --posX:" + xPos + "px");
+
+        lineTool.tooltip.style.visibility = lineTool.tooltipVisibility;
+    }
+}
+
+// Function to hide the tooltip.
+if (typeof lineTool.hideTooltip !== 'function') {
+    lineTool.hideTooltip = function () {
+        if (lineTool.tooltip) {
+            lineTool.tooltipVisibility = "hidden";
+            lineTool.tooltip.style.visibility = "hidden";
+        }
+    }
+}
+
+// Function to apply translation strings.
+if (typeof lineTool.applyLocalization !== 'function') {
+    lineTool.applyLocalization = function (target) {
+        if (!target) {
+            return;
+        }
+
+        let targets = target.querySelectorAll('[localeKey]');
+        targets.forEach(function (currentValue) {
+            currentValue.innerHTML = engine.translate(currentValue.getAttribute("localeKey"));
+        });
+    }
+}
+
+// Function to setup buttons.
+if (typeof lineTool.setupClickButton !== 'function') {
+    lineTool.setupClickButton = function (id, onclick, toolTipKey) {
+        let newButton = document.getElementById(id);
+        if (newButton) {
+            newButton.onclick = onclick;
+            lineTool.setTooltip(id, toolTipKey);
+        }
+    }
+}
+
+// Function to setup tooltip.
+if (typeof lineTool.setTooltip !== 'function') {
+    lineTool.setTooltip = function (id, toolTipKey) {
+        let target = document.getElementById(id);
+        target.onmouseenter = () => lineTool.showTooltip(document.getElementById(id), toolTipKey);
+        target.onmouseleave = lineTool.hideTooltip;
+    }
+}
+
 // Set initial figures.
 lineTool.adjustSpacing(null, 0);
 lineTool.adjustRotation(null, 0);
@@ -287,20 +399,31 @@ lineTool.adjustRandomOffset(null, 0);
 lineTool.adjustRandomSpacing(null, 0);
 
 // Add button event handlers.
-document.getElementById("line-tool-fence").onmousedown = () => { lineTool.fenceMode(); }
-document.getElementById("line-tool-straight").onclick = lineTool.handleStraightMode;
-document.getElementById("line-tool-simplecurve").onclick = lineTool.handleSimpleCurveMode;
-document.getElementById("line-tool-circle").onclick = lineTool.handleCircleMode;
+lineTool.setupClickButton("line-tool-fence", lineTool.fenceMode, "FenceMode");
+lineTool.setupClickButton("line-tool-straight", lineTool.handleStraightMode, "StraightLine");
+lineTool.setupClickButton("line-tool-simplecurve", lineTool.handleSimpleCurveMode, "SimpleCurve");
+lineTool.setupClickButton("line-tool-circle", lineTool.handleCircleMode, "Circle");
 
-document.getElementById("line-tool-measure-even").onmousedown = () => { lineTool.measureEven(); }
-document.getElementById("line-tool-spacing-down").onmousedown = (event) => { lineTool.adjustSpacing(event, -1); }
-document.getElementById("line-tool-spacing-up").onmousedown = (event) => { lineTool.adjustSpacing(event, 1); }
+lineTool.setupClickButton("line-tool-measure-even", lineTool.measureEven, "FixedLength");
+lineTool.setupClickButton("line-tool-rotation-random", lineTool.randomRotation, "RandomRotation");
 
-document.getElementById("line-tool-rotation-random").onmousedown = () => { lineTool.randomRotation(); }
-document.getElementById("line-tool-rotation-up").onmousedown = (event) => { lineTool.adjustRotation(event, 1); }
-document.getElementById("line-tool-rotation-down").onmousedown = (event) => { lineTool.adjustRotation(event, -1); }
+lineTool.setupClickButton("line-tool-spacing-down", (event) => { lineTool.adjustSpacing(event, -1); }, "SpacingDown");
+lineTool.setupClickButton("line-tool-spacing-up", (event) => { lineTool.adjustSpacing(event, 1); }, "SpacingUp");
+lineTool.setupClickButton("line-tool-rotation-down", (event) => { lineTool.adjustRotation(event, -1); }, "AntiClockwise");
+lineTool.setupClickButton("line-tool-rotation-up", (event) => { lineTool.adjustRotation(event, 1); }, "Clockwise");
 
-document.getElementById("line-tool-xOffset-down").onmousedown = (event) => { lineTool.adjustRandomSpacing(event, -1); }
-document.getElementById("line-tool-xOffset-up").onmousedown = (event) => { lineTool.adjustRandomSpacing(event, 1); }
-document.getElementById("line-tool-zOffset-down").onmousedown = (event) => { lineTool.adjustRandomOffset(event, -1); }
-document.getElementById("line-tool-zOffset-up").onmousedown = (event) => { lineTool.adjustRandomOffset(event, 1); }
+lineTool.setupClickButton("line-tool-xOffset-down", (event) => { lineTool.adjustRandomSpacing(event, -1); }, "RandomSpacingDown");
+lineTool.setupClickButton("line-tool-xOffset-up", (event) => { lineTool.adjustRandomSpacing(event, 1); }, "RandomSpacingUp");
+lineTool.setupClickButton("line-tool-zOffset-down", (event) => { lineTool.adjustRandomOffset(event, -1); }, "RandomOffsetDown");
+lineTool.setupClickButton("line-tool-zOffset-up", (event) => { lineTool.adjustRandomOffset(event, 1); }, "RandomOffsetUp");
+
+lineTool.setTooltip("line-tool-spacing-field", "Spacing");
+lineTool.setTooltip("line-tool-rotation-field", "Rotation");
+lineTool.setTooltip("line-tool-xOffset-field", "SpacingVariation");
+lineTool.setTooltip("line-tool-zOffset-field", "OffsetVariation");
+
+// Apply translations.
+lineTool.applyLocalization(lineTool.div);
+
+// Clear any stale tooltip reference.
+lineTool.tooltip = null;

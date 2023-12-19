@@ -6,7 +6,7 @@
 		<Authors>algernon</Authors>
 		<Copyright>Copyright © 2023 algernon (github.com/algernon-A). All rights reserved.</Copyright>
 		<Product>$(Title)</Product>
-		<Version>1.1.2</Version>
+		<Version>1.2.0</Version>
 		<LangVersion>9.0</LangVersion>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 	</PropertyGroup>
@@ -33,6 +33,7 @@
 	</ItemGroup>
 	
 	<ItemGroup>
+	  <EmbeddedResource Include="l10n.csv" />
 	  <EmbeddedResource Include="UI\ui.css" />
 	  <EmbeddedResource Include="UI\ui.html" />
 	  <EmbeddedResource Include="UI\ui.js" />

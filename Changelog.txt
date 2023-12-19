@@ -1,3 +1,8 @@
+1.2.0
+- Add tooltips to tool panel.
+- Add localization.
+- Add proper licensing.
+
 1.1.2
 - Additional updates for Tree Controller integration.
 

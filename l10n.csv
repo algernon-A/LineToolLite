@@ -1,0 +1,37 @@
+scope	key	en-US
+LINETOOL	FenceMode	Fence mode
+LINETOOL_DESCRIPTION	FenceMode	Automatically aligns and places objects continuously, like a fence.
+LINETOOL	StraightLine	Straight line
+LINETOOL_DESCRIPTION	StraightLine	Place objects along a straight line from point A to point B.
+LINETOOL	SimpleCurve	Simple curve
+LINETOOL_DESCRIPTION	SimpleCurve	Define a start and bend, then define end point.
+LINETOOL	Circle	Circle
+LINETOOL_DESCRIPTION	Circle	Define the center of the circle, then set the radius.
+LINETOOL	FixedLength	Fixed length
+LINETOOL_DESCRIPTION	FixedLength	Space items along the full length of the line from start to end, using the set spacing distance only as an approximation. If this is NOT set then items will be spaced exactly according to the set distance, even if it means they can't be placed along the full length of the line.
+LINETOOL	RandomRotation	Random rotation
+LINETOOL_DESCRIPTION	RandomRotation	Rotate each item randomly so they all face in different directions.
+LINETOOL	SpacingDown	Decrease spacing
+LINETOOL_DESCRIPTION	SpacingDown	Change the step size by holding down the shift key (step by 10m) or control key (step by 0.1m) when clicking.
+LINETOOL	SpacingUp	Increase spacing
+LINETOOL_DESCRIPTION	SpacingUp	Change the step size by holding down the shift key (step by 10m) or control key (step by 0.1m) when clicking.
+LINETOOL	AntiClockwise	Rotate anti-clockwise
+LINETOOL_DESCRIPTION	AntiClockwise	Change the step size by holding down the shift key (rotate by 90&deg;) or control key (rotate by 1&deg;) when clicking.
+LINETOOL	Clockwise	Rotate clockwise
+LINETOOL_DESCRIPTION	Clockwise	Change the step size by holding down the shift key (rotate by 90&deg;) or control key (rotate by 1&deg;) when clicking.
+LINETOOL	RandomSpacingDown	Decrease random spacing variation
+LINETOOL_DESCRIPTION	RandomSpacingDown	Change the step size by holding down the shift key (step by 10m) or control key (step by 0.1m) when clicking. Set to zero for precise placement.
+LINETOOL	RandomSpacingUp	Increase random spacing variation
+LINETOOL_DESCRIPTION	RandomSpacingUp	Change the step size by holding down the shift key (step by 10m) or control key (step by 0.1m) when clicking. Set to zero for precise placement.
+LINETOOL	RandomOffsetDown	Decrease random sideways variation
+LINETOOL_DESCRIPTION	RandomOffsetDown	Change the step size by holding down the shift key (step by 10m) or control key (step by 0.1m) when clicking. Set to zero for precise placement.
+LINETOOL	RandomOffsetUp	Increase random sideways variation
+LINETOOL_DESCRIPTION	RandomOffsetUp	Change the step size by holding down the shift key (step by 10m) or control key (step by 0.1m) when clicking. Set to zero for precise placement.
+LINETOOL	Spacing	Spacing
+LINETOOL_DESCRIPTION	Spacing	Objects will be spaced apart by this amount (or approximately this amount if fixed length spacing is selected).
+LINETOOL	Rotation	Rotation
+LINETOOL_DESCRIPTION	Rotation	Objects will be rotated by this amount.
+LINETOOL	SpacingVariation	Spacing variation
+LINETOOL_DESCRIPTION	SpacingVariation	Object spacing along the line will be varied by a random distance up to this maximum. Set to zero for precise placement.
+LINETOOL	OffsetVariation	Offset variation
+LINETOOL_DESCRIPTION	OffsetVariation	Objects will be randomly offset sideways from the line up to this maximum distance. Set to zero for precise placement.

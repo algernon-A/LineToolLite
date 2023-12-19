@@ -16,6 +16,9 @@
 		<Reference Include="Colossal.UI.Binding">
 			<Private>false</Private>
 		</Reference>
+		<Reference Include="Colossal.Localization">
+			<Private>false</Private>
+		</Reference>
 		<Reference Include="Colossal.Logging">
 			<Private>false</Private>
 		</Reference>
