@@ -1,3 +1,6 @@
+1.2.1
+- Add explicit frame sync to tooltips.
+
 1.2.0
 - Add tooltips to tool panel.
 - Add localization.

@@ -321,13 +321,19 @@ if (typeof lineTool.showTooltip !== 'function') {
         // Set text and position.
         lineTool.tooltipTitle.innerHTML = engine.translate("LINETOOL." + tooltipKey);
         lineTool.tooltipPara.innerHTML = engine.translate("LINETOOL_DESCRIPTION." + tooltipKey);
-        lineTool.setTooltipPos(parent);
 
         // Set visibility tracking to prevent race conditions with popup delay.
         lineTool.tooltipVisibility = "visible";
 
-        // Slightly delay popup to prevent premature activation and to ensure layout is ready.
-        window.setTimeout(function () { lineTool.setTooltipPos(parent) }, 25);
+        // Slightly delay popup by three frames to prevent premature activation and to ensure layout is ready.
+        window.requestAnimationFrame(() => {
+            window.requestAnimationFrame(() => {
+                window.requestAnimationFrame(() => {
+                    lineTool.setTooltipPos(parent);
+                });
+                
+            });
+        });
     }
 }
 
