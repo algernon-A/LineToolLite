@@ -17,10 +17,12 @@ Version 1.3 of this mod adds a direct User Interface integration with the game's
 
 Line modes are now activated directly from the new line modes selection at the bottom of the tool options panel.
 
+![Selecton panel location](https://i.imgur.com/90Htbrp.png)
+
 ## Instructions
 ### To activate the tool:
 - Select the object that you'd like to place in a line (e.g. a tree) - either normally or with the Dev UI.
-- Select the desired line mode from the line modes selection at the bottom of the tool options panel (in the normal tool options place, towards the bottom-left of the screen).
+- Select the desired line mode from the line modes selection at the bottom of the tool options panel (in the normal tool options place, towards the bottom-left of the screen; see image above).
 
 ### To place the line:
 - **Left-click** where you want the line to begin, and **left-click again** at the desired endpoint to place the objects (curves require three clicks - start, guidepoint, and end).
@@ -40,9 +42,8 @@ Line modes are now activated directly from the new line modes selection at the b
 To remove variable spacing and/or offset, simply set the field(s) back to zero. **Shift-clicking** (10m increments) can make this faster.
 
 ### To exit the tool:
-- Select 'single placement mode',
-- Press **Escape**, or
-- Select another tool or object.
+- Select 'single placement mode' to return to the normal placement mode for the selected object, or
+- Press **Escape**.
 
 ## Requirements
 - BepInEx 5

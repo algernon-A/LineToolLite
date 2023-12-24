@@ -1,3 +1,7 @@
+## 1.3.1
+- Update README with tool mode location image.
+
+
 ## 1.3
 - Add integration with existing tool panels (no more hotkey).
 - Add initial localizations for Simplified Chinese, German, and Spanish from CrowdIn translation volunteers.
