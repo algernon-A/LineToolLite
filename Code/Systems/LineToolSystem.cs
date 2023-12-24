@@ -51,6 +51,7 @@ namespace LineTool
         private Entity _cursorEntity = Entity.Null;
 
         // Prefab selection.
+        private ToolBaseSystem _previousTool = null;
         private ObjectGeometryPrefab _selectedPrefab;
         private Entity _selectedEntity = Entity.Null;
         private int _originalXP;
@@ -254,7 +255,16 @@ namespace LineTool
         {
             set
             {
-                _selectedPrefab = value as ObjectGeometryPrefab;
+                // Don't do anything else if no change.
+                ObjectGeometryPrefab geometryPrefab = value as ObjectGeometryPrefab;
+                if (_selectedPrefab == geometryPrefab)
+                {
+                    return;
+                }
+
+                // Revert XP changes and get new value.
+                RestoreXP();
+                _selectedPrefab = geometryPrefab;
 
                 // Update selected entity.
                 if (_selectedPrefab is null)
@@ -310,14 +320,14 @@ namespace LineTool
         /// Gets the prefab selected by this tool.
         /// </summary>
         /// <returns>C<c>null</c>.</returns>
-        public override PrefabBase GetPrefab() => null; // TODO:_selectedPrefab;
+        public override PrefabBase GetPrefab() => _selectedPrefab;
 
         /// <summary>
         /// Sets the prefab selected by this tool.
         /// </summary>
         /// <param name="prefab">Prefab to set.</param>
-        /// <returns><c>true</c> if a prefab is currently selected, otherwise <c>false</c>.</returns>
-        public override bool TrySetPrefab(PrefabBase prefab) => false;
+        /// <returns><c>true</c> uf the previously-used tool (if any) can use this prefab, otherwise <c>false</c>.</returns>
+        public override bool TrySetPrefab(PrefabBase prefab) => _previousTool?.TrySetPrefab(prefab) ?? false;
 
         /// <summary>
         /// Elevation-up key handler; used to increment spacing.
@@ -328,6 +338,42 @@ namespace LineTool
         /// Elevation-down key handler; used to decrement spacing.
         /// </summary>
         public override void ElevationDown() => Spacing = _spacing - 1;
+
+        /// <summary>
+        /// Enables the tool (called by hotkey action).
+        /// </summary>
+        internal void EnableTool()
+        {
+            // Activate this tool if it isn't already active.
+            if (m_ToolSystem.activeTool != this)
+            {
+                _previousTool = m_ToolSystem.activeTool;
+
+                // Check for valid prefab selection before continuing.
+                SelectedPrefab = World.GetOrCreateSystemManaged<ObjectToolSystem>().prefab;
+                if (_selectedPrefab != null)
+                {
+                    // Valid prefab selected - switch to this tool.
+                    m_ToolSystem.selected = Entity.Null;
+                    m_ToolSystem.activeTool = this;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Restores the previously-used tool.
+        /// </summary>
+        internal void RestorePreviousTool()
+        {
+            if (_previousTool is not null)
+            {
+                m_ToolSystem.activeTool = _previousTool;
+            }
+            else
+            {
+                _log.Error("null tool set when restoring previous tool");
+            }
+        }
 
         /// <summary>
         /// Refreshes all displayed prefabs to align with current Tree Control settings.
@@ -378,12 +424,6 @@ namespace LineTool
             _keepBuildingAction = new ("LineTool-KeepBuilding");
             _keepBuildingAction.AddCompositeBinding("ButtonWithOneModifier").With("Modifier", "<Keyboard>/shift").With("Button", "<Mouse>/leftButton");
             _keepBuildingAction.Enable();
-
-            // Enable hotkey.
-            InputAction hotKey = new ("LineTool-Hotkey");
-            hotKey.AddCompositeBinding("ButtonWithOneModifier").With("Modifier", "<Keyboard>/ctrl").With("Button", "<Keyboard>/l");
-            hotKey.performed += EnableTool;
-            hotKey.Enable();
         }
 
         /// <summary>
@@ -666,6 +706,9 @@ namespace LineTool
             _log.Debug("OnStartRunning");
             base.OnStartRunning();
 
+            // Clear any existing tooltips.
+            World.GetExistingSystemManaged<LineToolUISystem>().ClearTooltip();
+
             // Ensure apply action is enabled.
             _applyAction.shouldBeEnabled = true;
             _cancelAction.shouldBeEnabled = true;
@@ -711,13 +754,8 @@ namespace LineTool
             // Clear previewed entity buffer.
             _previewEntities.Clear();
 
-            // Restore original prefab XP, if we changed it.
-            if (_originalXP != 0 && EntityManager.TryGetComponent(_selectedEntity, out PlaceableObjectData placeableData))
-            {
-                placeableData.m_XPReward = _originalXP;
-                EntityManager.SetComponentData(_selectedEntity, placeableData);
-                _originalXP = 0;
-            }
+            // Restore prefab XP.
+            RestoreXP();
 
             // Reset state.
             _mode.Reset();
@@ -736,26 +774,6 @@ namespace LineTool
             _tooltips.Dispose();
 
             base.OnDestroy();
-        }
-
-        /// <summary>
-        /// Enables the tool (called by hotkey action).
-        /// </summary>
-        /// <param name="context">Callback context.</param>
-        private void EnableTool(InputAction.CallbackContext context)
-        {
-            // Activate this tool if it isn't already active.
-            if (m_ToolSystem.activeTool != this)
-            {
-                // Check for valid prefab selection before continuing.
-                SelectedPrefab = World.GetOrCreateSystemManaged<ObjectToolSystem>().prefab;
-                if (_selectedPrefab != null)
-                {
-                    // Valid prefab selected - switch to this tool.
-                    m_ToolSystem.selected = Entity.Null;
-                    m_ToolSystem.activeTool = this;
-                }
-            }
         }
 
         /// <summary>
@@ -784,6 +802,20 @@ namespace LineTool
             }
 
             return newEntity;
+        }
+
+        /// <summary>
+        /// Restores the selected prefab's original XP gain.
+        /// </summary>
+        private void RestoreXP()
+        {
+            // Restore original prefab XP, if we changed it.
+            if (_originalXP != 0 && _selectedEntity != Entity.Null && EntityManager.TryGetComponent(_selectedEntity, out PlaceableObjectData placeableData))
+            {
+                placeableData.m_XPReward = _originalXP;
+                EntityManager.SetComponentData(_selectedEntity, placeableData);
+                _originalXP = 0;
+            }
         }
 
         /// <summary>

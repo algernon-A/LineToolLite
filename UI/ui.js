@@ -5,6 +5,50 @@
 // </copyright>
 
 
+// Function to activate point mode.
+if (typeof lineTool.handlePoint !== 'function') {
+    lineTool.handlePoint = function () {
+        document.getElementById("line-tool-simplecurve").classList.remove("selected");
+        document.getElementById("line-tool-circle").classList.remove("selected");
+        document.getElementById("line-tool-straight").classList.remove("selected");
+        document.getElementById("line-tool-point").classList.add("selected");
+        engine.trigger('SetPointMode');
+    }
+}
+
+// Function to activate straight mode.
+if (typeof lineTool.handleStraight !== 'function') {
+    lineTool.handleStraight = function () {
+        document.getElementById("line-tool-point").classList.remove("selected");
+        document.getElementById("line-tool-simplecurve").classList.remove("selected");
+        document.getElementById("line-tool-circle").classList.remove("selected");
+        document.getElementById("line-tool-straight").classList.add("selected");
+        engine.trigger('SetStraightMode');
+    }
+}
+
+// Function to activate simple curve mode.
+if (typeof lineTool.handleSimpleCurve !== 'function') {
+    lineTool.handleSimpleCurve = function () {
+        document.getElementById("line-tool-point").classList.remove("selected");
+        document.getElementById("line-tool-straight").classList.remove("selected");
+        document.getElementById("line-tool-circle").classList.remove("selected");
+        document.getElementById("line-tool-simplecurve").classList.add("selected");
+        engine.trigger('SetSimpleCurveMode');
+    }
+}
+
+// Function to activate circle mode.
+if (typeof lineTool.handleCircle !== 'function') {
+    lineTool.handleCircle = function () {
+        document.getElementById("line-tool-point").classList.remove("selected");
+        document.getElementById("line-tool-straight").classList.remove("selected");
+        document.getElementById("line-tool-simplecurve").classList.remove("selected");
+        document.getElementById("line-tool-circle").classList.add("selected");
+        engine.trigger('SetCircleMode');
+    }
+}
+
 // Function to apply modifiers to distance adjustments.
 if (typeof lineTool.adjustDistance != 'function') {
     lineTool.adjustDistance = function (event, adjustment) {
@@ -209,48 +253,6 @@ if (typeof lineTool.addTreeControl !== 'function') {
     }
 }
 
-// Function to activate straight mode.
-if (typeof lineTool.handleStraightMode !== 'function') {
-    lineTool.handleStraightMode = function() {
-        document.getElementById("line-tool-simplecurve").classList.remove("selected");
-        document.getElementById("line-tool-circle").classList.remove("selected");
-        document.getElementById("line-tool-straight").classList.add("selected");
-        engine.trigger('SetStraightMode');
-    }
-}
-
-// Function to activate simple curve mode.
-if (typeof lineTool.handleSimpleCurveMode !== 'function') {
-    lineTool.handleSimpleCurveMode = function() {
-        document.getElementById("line-tool-straight").classList.remove("selected");
-        document.getElementById("line-tool-circle").classList.remove("selected");
-        document.getElementById("line-tool-simplecurve").classList.add("selected");
-        engine.trigger('SetSimpleCurveMode');
-    }
-}
-
-// Function to activate circle mode.
-if (typeof lineTool.handleCircleMode !== 'function') {
-    lineTool.handleCircleMode = function() {
-        document.getElementById("line-tool-straight").classList.remove("selected");
-        document.getElementById("line-tool-simplecurve").classList.remove("selected");
-        document.getElementById("line-tool-circle").classList.add("selected");
-        engine.trigger('SetCircleMode');
-    }
-}
-
-// Function to set div visibility
-if (typeof lineTool.setDivVisiblity !== 'function') {
-    lineTool.setDivVisiblity = function (isVisible, divId) {
-        if (isVisible) {
-            document.getElementById(divId).style.visibility = "visible";
-        }
-        else {
-            document.getElementById(divId).style.visibility = "hidden";
-        }
-    }
-}
-
 // Function to set rotation selection control visibility
 if (typeof lineTool.setRotationVisibility !== 'function') {
     lineTool.setRotationVisibility = function(isVisible) {
@@ -265,139 +267,6 @@ if (typeof lineTool.setRotationVisibility !== 'function') {
     }
 }
 
-// Function to set the visibility status of a button with icon child.
-if (typeof lineTool.setButtonVisibility !== 'function') {
-    lineTool.setButtonVisibility = function(button, isVisible) {
-        var firstChild = button.firstChild;
-        if (isVisible) {
-            button.classList.remove("hidden");
-            firstChild.classList.remove("hidden");
-            firstChild.style.display = "inline";
-        }
-        else {
-            button.classList.add("hidden");
-            firstChild.classList.add("hidden");
-            firstChild.style.display = "none";
-        }
-    }
-}
-
-// Function to show a tooltip, creating if necessary.
-if (typeof lineTool.showTooltip !== 'function') {
-    lineTool.showTooltip = function (parent, tooltipKey) {
-        
-        if (!lineTool.tooltip) {
-            lineTool.tooltip = document.createElement("div");
-            lineTool.tooltip.style.visibility = "hidden";
-            lineTool.tooltip.classList.add("balloon_qJY", "balloon_H23", "up_ehW", "center_hug", "anchored-balloon_AYp", "up_el0");
-            let boundsDiv = document.createElement("div");
-            boundsDiv.classList.add("bounds__AO");
-            let containerDiv = document.createElement("div");
-            containerDiv.classList.add("container_zgM", "container_jfe");
-            let contentDiv = document.createElement("div");
-            contentDiv.classList.add("content_A82", "content_JQV");
-            let arrowDiv = document.createElement("div");
-            arrowDiv.classList.add("arrow_SVb", "arrow_Xfn");
-            let broadDiv = document.createElement("div");
-            lineTool.tooltipTitle = document.createElement("div");
-            lineTool.tooltipTitle.classList.add("title_lCJ");
-            let paraDiv = document.createElement("div");
-            paraDiv.classList.add("paragraphs_nbD", "description_dNa");
-            lineTool.tooltipPara = document.createElement("p");
-            lineTool.tooltipPara.setAttribute("cohinline", "cohinline");
-
-            paraDiv.appendChild(lineTool.tooltipPara);
-            broadDiv.appendChild(lineTool.tooltipTitle);
-            broadDiv.appendChild(paraDiv);
-            containerDiv.appendChild(arrowDiv);
-            contentDiv.appendChild(broadDiv);
-            boundsDiv.appendChild(containerDiv);
-            boundsDiv.appendChild(contentDiv);
-            lineTool.tooltip.appendChild(boundsDiv);
-
-            document.getElementsByClassName("game-main-screen_TRK")[0].appendChild(lineTool.tooltip);
-        }
-
-        // Set text and position.
-        lineTool.tooltipTitle.innerHTML = engine.translate("LINETOOL." + tooltipKey);
-        lineTool.tooltipPara.innerHTML = engine.translate("LINETOOL_DESCRIPTION." + tooltipKey);
-
-        // Set visibility tracking to prevent race conditions with popup delay.
-        lineTool.tooltipVisibility = "visible";
-
-        // Slightly delay popup by three frames to prevent premature activation and to ensure layout is ready.
-        window.requestAnimationFrame(() => {
-            window.requestAnimationFrame(() => {
-                window.requestAnimationFrame(() => {
-                    lineTool.setTooltipPos(parent);
-                });
-                
-            });
-        });
-    }
-}
-
-// Function to adjust the position of a tooltip and make visible.
-if (typeof lineTool.setTooltipPos !== 'function') {
-    lineTool.setTooltipPos = function (parent) {
-        if (!lineTool.tooltip) {
-            return;
-        }
-
-        let tooltipRect = lineTool.tooltip.getBoundingClientRect();
-        let parentRect = parent.getBoundingClientRect();
-        let xPos = parentRect.left + ((parentRect.width - tooltipRect.width) / 2);
-        let yPos = parentRect.top - tooltipRect.height;
-        lineTool.tooltip.setAttribute("style", "left:" + xPos + "px; top: " + yPos + "px; --posY: " + yPos + "px; --posX:" + xPos + "px");
-
-        lineTool.tooltip.style.visibility = lineTool.tooltipVisibility;
-    }
-}
-
-// Function to hide the tooltip.
-if (typeof lineTool.hideTooltip !== 'function') {
-    lineTool.hideTooltip = function () {
-        if (lineTool.tooltip) {
-            lineTool.tooltipVisibility = "hidden";
-            lineTool.tooltip.style.visibility = "hidden";
-        }
-    }
-}
-
-// Function to apply translation strings.
-if (typeof lineTool.applyLocalization !== 'function') {
-    lineTool.applyLocalization = function (target) {
-        if (!target) {
-            return;
-        }
-
-        let targets = target.querySelectorAll('[localeKey]');
-        targets.forEach(function (currentValue) {
-            currentValue.innerHTML = engine.translate(currentValue.getAttribute("localeKey"));
-        });
-    }
-}
-
-// Function to setup buttons.
-if (typeof lineTool.setupClickButton !== 'function') {
-    lineTool.setupClickButton = function (id, onclick, toolTipKey) {
-        let newButton = document.getElementById(id);
-        if (newButton) {
-            newButton.onclick = onclick;
-            lineTool.setTooltip(id, toolTipKey);
-        }
-    }
-}
-
-// Function to setup tooltip.
-if (typeof lineTool.setTooltip !== 'function') {
-    lineTool.setTooltip = function (id, toolTipKey) {
-        let target = document.getElementById(id);
-        target.onmouseenter = () => lineTool.showTooltip(document.getElementById(id), toolTipKey);
-        target.onmouseleave = lineTool.hideTooltip;
-    }
-}
-
 // Set initial figures.
 lineTool.adjustSpacing(null, 0);
 lineTool.adjustRotation(null, 0);
@@ -405,10 +274,12 @@ lineTool.adjustRandomOffset(null, 0);
 lineTool.adjustRandomSpacing(null, 0);
 
 // Add button event handlers.
+lineTool.setupClickButton("line-tool-point", lineTool.handlePoint, "PointMode");
+lineTool.setupClickButton("line-tool-straight", lineTool.handleStraight, "StraightLine");
+lineTool.setupClickButton("line-tool-simplecurve", lineTool.handleSimpleCurve, "SimpleCurve");
+lineTool.setupClickButton("line-tool-circle", lineTool.handleCircle, "Circle");
+
 lineTool.setupClickButton("line-tool-fence", lineTool.fenceMode, "FenceMode");
-lineTool.setupClickButton("line-tool-straight", lineTool.handleStraightMode, "StraightLine");
-lineTool.setupClickButton("line-tool-simplecurve", lineTool.handleSimpleCurveMode, "SimpleCurve");
-lineTool.setupClickButton("line-tool-circle", lineTool.handleCircleMode, "Circle");
 
 lineTool.setupClickButton("line-tool-measure-even", lineTool.measureEven, "FixedLength");
 lineTool.setupClickButton("line-tool-rotation-random", lineTool.randomRotation, "RandomRotation");
@@ -433,3 +304,16 @@ lineTool.applyLocalization(lineTool.div);
 
 // Clear any stale tooltip reference.
 lineTool.tooltip = null;
+
+// Hide any existing modes panel.
+if (document.getElementById("line-tool-modes")) {
+    let modePanel = document.getElementById("line-tool-modes");
+    if (modePanel.parentElement) {
+        modePanel.parentElement.removeChild(modePanel);
+    }
+}
+
+// Set panel additional class for editor.
+if (document.getElementsByClassName("editor-main-screen_m89").length > 0) {
+    document.getElementById("line-tool-panel").classList.add("tool-options_Cqd");
+}

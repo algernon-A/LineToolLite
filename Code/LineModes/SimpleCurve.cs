@@ -55,6 +55,7 @@ namespace LineTool
             if (!m_validStart)
             {
                 m_startPos = position;
+                m_endPos = position;
                 m_validStart = true;
                 return false;
             }

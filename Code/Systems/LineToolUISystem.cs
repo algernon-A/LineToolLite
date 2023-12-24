@@ -32,6 +32,9 @@ namespace LineTool
 
         // Internal status.
         private bool _toolIsActive = false;
+        private bool _activateTool = false;
+        private bool _restorePreviousTool = false;
+        private ToolBaseSystem _previousSystem = null;
 
         // Event binding.
         private List<BoundEventHandle> _eventHandles;
@@ -40,6 +43,9 @@ namespace LineTool
         private string _injectedHTML;
         private string _injectedJS;
         private string _injectedCSS;
+        private string _modeHTML;
+        private string _modeJS;
+        private string _commonJS;
 
         /// <summary>
         ///  Updates the displayed spacing amount.
@@ -47,7 +53,7 @@ namespace LineTool
         internal void UpdateSpacing()
         {
             // Multiply spacing by 10 for accuracy conversion)
-            ExecuteScript(_uiView, $"if (lineTool) {{ lineTool.spacing = {_lineToolSystem.Spacing * 10}; if (lineTool.refreshSpacing) lineTool.refreshSpacing();}}");
+            ExecuteScript(_uiView, $"if (typeof(lineTool) == 'object') {{ lineTool.spacing = {_lineToolSystem.Spacing * 10}; if (lineTool.refreshSpacing) lineTool.refreshSpacing();}}");
         }
 
         /// <summary>
@@ -55,7 +61,7 @@ namespace LineTool
         /// </summary>
         internal void ClearTooltip()
         {
-            ExecuteScript(_uiView, "if (lineTool) {{ lineTool.hideTooltip(); }}");
+            ExecuteScript(_uiView, "if (typeof(lineTool) == 'object') {{ lineTool.hideTooltip(); }}");
         }
 
         /// <summary>
@@ -74,12 +80,17 @@ namespace LineTool
             _lineToolSystem = World.GetOrCreateSystemManaged<LineToolSystem>();
 
             // Read injection data.
-            _injectedHTML = ReadHTML("LineToolLite.UI.ui.html", "lineTool.div.className = \"tool-options-panel_Se6\"; lineTool.div.id = \"line-tool-panel\"; lineTool.targetParent = document.getElementsByClassName(\"tool-side-column_l9i\"); if (lineTool.targetParent.length == 0) lineTool.targetParent = document.getElementsByClassName(\"editor-toolbar_i1J\"); if (lineTool.targetParent.length != 0) lineTool.targetParent[0].appendChild(lineTool.div);");
+            _commonJS = ReadJS("LineToolLite.UI.common.js");
+            _modeHTML = ReadHTML("LineToolLite.UI.modes.html", "modeDiv", "if (!document.getElementById(\"line-tool-modes\") && !document.getElementById(\"line-tool-panel\")) { lineTool.modeParent = document.getElementsByClassName(\"tool-options-panel_Se6\"); if (lineTool.modeParent.length != 0) lineTool.modeParent[0].appendChild(lineTool.modeDiv); }");
+            _modeJS = ReadJS("LineToolLite.UI.modes.js");
+            _injectedHTML = ReadHTML("LineToolLite.UI.ui.html", "div", "lineTool.div.className = \"tool-options-panel_Se6\"; lineTool.div.id = \"line-tool-panel\"; lineTool.targetParent = document.getElementsByClassName(\"tool-side-column_l9i\"); if (lineTool.targetParent.length == 0) lineTool.targetParent = document.getElementsByClassName(\"main_k4u\"); if (lineTool.targetParent.length != 0) lineTool.targetParent[0].appendChild(lineTool.div);");
             _injectedJS = ReadJS("LineToolLite.UI.ui.js");
             _injectedCSS = ReadCSS("LineToolLite.UI.ui.css");
 
             // Initialize event handle list.
             _eventHandles = new ();
+
+            _toolSystem.EventPrefabChanged = (Action<PrefabBase>)Delegate.Combine(_toolSystem.EventPrefabChanged, new Action<PrefabBase>(OnPrefabChanged));
         }
 
         /// <summary>
@@ -89,13 +100,43 @@ namespace LineTool
         {
             base.OnUpdate();
 
+            // Check for tool activation trigger.
+            if (_activateTool)
+            {
+                // Trigger set - clear it and activate tool.
+                _activateTool = false;
+                if (_toolSystem.activeTool != _lineToolSystem)
+                {
+                    _log.Debug("enabling tool");
+                    _lineToolSystem.EnableTool();
+                    return;
+                }
+            }
+
+            // Check for previous tool restoration trigger.
+            if (_restorePreviousTool)
+            {
+                // Trigger set - clear it and restore previous tool.
+                _restorePreviousTool = false;
+                if (_toolSystem.activeTool == _lineToolSystem)
+                {
+                    _log.Debug("restoring previous tool");
+                    _lineToolSystem.RestorePreviousTool();
+                    return;
+                }
+            }
+
             // Check for line tool activation.
             if (_toolSystem.activeTool == _lineToolSystem)
             {
+                // Activate tool.
                 if (!_toolIsActive)
                 {
-                    // Tool is now active but previously wasn't; ensure namespace.
-                    ExecuteScript(_uiView, "if (lineTool == null) var lineTool = {};");
+                    // Tool is now active but previously wasn't; update previous tool system record.
+                    _previousSystem = _lineToolSystem;
+
+                    // Ensure JS setup.
+                    ExecuteScript(_uiView, _commonJS);
 
                     // Set initial rotation and offset variables in UI (multiply distances by 10 for accuracy conversion).
                     ExecuteScript(_uiView, $"lineTool.rotation = {_lineToolSystem.Rotation}; lineTool.randomSpacing = {_lineToolSystem.RandomSpacing * 10}; lineTool.randomOffset = {_lineToolSystem.RandomOffset * 10};");
@@ -149,9 +190,6 @@ namespace LineTool
 
                     // Register event callbacks.
                     _eventHandles.Add(_uiView.RegisterForEvent("SetLineToolFenceMode", (Action<bool>)SetFenceMode));
-                    _eventHandles.Add(_uiView.RegisterForEvent("SetStraightMode", (Action)SetStraightMode));
-                    _eventHandles.Add(_uiView.RegisterForEvent("SetSimpleCurveMode", (Action)SetSimpleCurveMode));
-                    _eventHandles.Add(_uiView.RegisterForEvent("SetCircleMode", (Action)SetCircleMode));
                     _eventHandles.Add(_uiView.RegisterForEvent("SetLineToolSpacing", (Action<float>)SetSpacing));
                     _eventHandles.Add(_uiView.RegisterForEvent("SetLineToolMeasureEven", (Action<bool>)SetFixedLength));
                     _eventHandles.Add(_uiView.RegisterForEvent("SetLineToolRandomRotation", (Action<bool>)SetRandomRotation));
@@ -160,6 +198,11 @@ namespace LineTool
                     _eventHandles.Add(_uiView.RegisterForEvent("SetLineToolRandomOffset", (Action<float>)SetRandomOffset));
                     _eventHandles.Add(_uiView.RegisterForEvent("LineToolTreeControlUpdated", (Action)TreeControlUpdated));
                     _eventHandles.Add(_uiView.RegisterForEvent("SetLineToolSpacing", (Action<float>)SetSpacing));
+
+                    _eventHandles.Add(_uiView.RegisterForEvent("SetPointMode", (Action)SetPointMode));
+                    _eventHandles.Add(_uiView.RegisterForEvent("SetStraightMode", (Action)SetStraightMode));
+                    _eventHandles.Add(_uiView.RegisterForEvent("SetSimpleCurveMode", (Action)SetSimpleCurveMode));
+                    _eventHandles.Add(_uiView.RegisterForEvent("SetCircleMode", (Action)SetCircleMode));
 
                     // Record current tool state.
                     _toolIsActive = true;
@@ -171,7 +214,7 @@ namespace LineTool
                 if (_toolIsActive)
                 {
                     // Remove DOM activation.
-                    ExecuteScript(_uiView, "var panel = document.getElementById(\"line-tool-panel\"); if (panel) panel.parentElement.removeChild(panel);");
+                    ExecuteScript(_uiView, "{ let panel = document.getElementById(\"line-tool-panel\"); if (panel) panel.parentElement.removeChild(panel); }");
 
                     // Remove event callbacks.
                     foreach (BoundEventHandle eventHandle in _eventHandles)
@@ -182,6 +225,55 @@ namespace LineTool
                     // Record current tool state.
                     _toolIsActive = false;
                 }
+                else
+                {
+                    // Check to see if another tool change has occurred.
+                    if (_toolSystem.activeTool != _previousSystem)
+                    {
+                        // Active tool has changed - record new tool.
+                        _previousSystem = _toolSystem.activeTool;
+
+                        // Check for object tool system activation.
+                        if (_previousSystem is ObjectToolSystem)
+                        {
+                            // Object tool is now active.
+                            _log.Debug("object tool system activated");
+
+                            // Attach our custom controls.
+                            // Inject scripts.
+                            _log.Debug("injecting component data");
+                            ExecuteScript(_uiView, _commonJS);
+                            ExecuteScript(_uiView, _modeHTML);
+                            ExecuteScript(_uiView, _modeJS);
+
+                            // Select point mode.
+                            ExecuteScript(_uiView, "document.getElementById(\"line-tool-mode-point\").classList.add(\"selected\");");
+
+                            _eventHandles.Add(_uiView.RegisterForEvent("SetPointMode", (Action)SetPointMode));
+                            _eventHandles.Add(_uiView.RegisterForEvent("SetStraightMode", (Action)SetStraightMode));
+                            _eventHandles.Add(_uiView.RegisterForEvent("SetSimpleCurveMode", (Action)SetSimpleCurveMode));
+                            _eventHandles.Add(_uiView.RegisterForEvent("SetCircleMode", (Action)SetCircleMode));
+                        }
+                        else
+                        {
+                            // Remove any stale modes panel.
+                            ExecuteScript(_uiView, "{ let modePanel = document.getElementById(\"line-tool-modes\"); if (modePanel) modePanel.parentElement.removeChild(modePanel); }");
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Handles changes in the selected prefab.
+        /// </summary>
+        /// <param name="prefab">New selected prefab.</param>
+        private void OnPrefabChanged(PrefabBase prefab)
+        {
+            // If the line tool is currently activated and the new prefab is a placeable object, reactivate it (the game will reset the tool to the relevant object tool).
+            if (_toolSystem.activeTool == _lineToolSystem && prefab is StaticObjectPrefab)
+            {
+                _activateTool = true;
             }
         }
 
@@ -232,9 +324,10 @@ namespace LineTool
         /// Load HTML from an embedded UI file.
         /// </summary>
         /// <param name="fileName">Embedded UI file name to read.</param>
+        /// <param name="variableName">JavaScript variable name to use for the div.</param>
         /// <param name="injectionPostfix">Injection JavaScript postfix text.</param>
         /// <returns>JavaScript <see cref="string"/> embedding the HTML (<c>null</c> if empty or error).</returns>
-        private string ReadHTML(string fileName, string injectionPostfix)
+        private string ReadHTML(string fileName, string variableName, string injectionPostfix)
         {
             try
             {
@@ -245,7 +338,7 @@ namespace LineTool
                 if (!string.IsNullOrEmpty(html))
                 {
                     // Return JavaScript code with HTML embedded.
-                    return $"lineTool.div = document.createElement('div'); lineTool.div.innerHTML = \"{EscapeToJavaScript(html)}\"; {injectionPostfix}";
+                    return $"lineTool.{variableName} = document.createElement('div'); lineTool.{variableName}.innerHTML = \"{EscapeToJavaScript(html)}\"; {injectionPostfix}";
                 }
             }
             catch (Exception e)
@@ -354,19 +447,43 @@ namespace LineTool
         private void SetFenceMode(bool isActive) => _lineToolSystem.CurrentSpacingMode = isActive ? SpacingMode.FenceMode : SpacingMode.Manual;
 
         /// <summary>
+        /// Event callback to set single item mode.
+        /// </summary>
+        private void SetPointMode()
+        {
+            // Restore previously-used tool.
+            _restorePreviousTool = true;
+        }
+
+        /// <summary>
         /// Event callback to set straight line mode.
         /// </summary>
-        private void SetStraightMode() => _lineToolSystem.Mode = LineMode.Straight;
+        private void SetStraightMode()
+        {
+            // Ensure tool is activated.
+            _activateTool = true;
+            _lineToolSystem.Mode = LineMode.Straight;
+        }
 
         /// <summary>
         /// Event callback to set simple curve mode.
         /// </summary>
-        private void SetSimpleCurveMode() => _lineToolSystem.Mode = LineMode.SimpleCurve;
+        private void SetSimpleCurveMode()
+        {
+            // Ensure tool is activated.
+            _activateTool = true;
+            _lineToolSystem.Mode = LineMode.SimpleCurve;
+        }
 
         /// <summary>
         /// Event callback to set circle mode.
         /// </summary>
-        private void SetCircleMode() => _lineToolSystem.Mode = LineMode.Circle;
+        private void SetCircleMode()
+        {
+            // Ensure tool is activated.
+            _activateTool = true;
+            _lineToolSystem.Mode = LineMode.Circle;
+        }
 
         /// <summary>
         /// Event callback to set current spacing.

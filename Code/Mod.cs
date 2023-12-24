@@ -8,6 +8,7 @@ namespace LineTool
 {
     using System.IO;
     using System.Reflection;
+    using Colossal.IO.AssetDatabase;
     using Colossal.Logging;
     using Game;
     using Game.Modding;

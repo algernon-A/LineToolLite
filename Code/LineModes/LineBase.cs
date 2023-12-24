@@ -80,8 +80,9 @@ namespace LineTool
             // If no valid start position is set, record it.
             if (!m_validStart)
             {
-                m_validStart = true;
                 m_startPos = position;
+                m_endPos = position;
+                m_validStart = true;
 
                 // No placement at this stage (only the first click has been made).
                 return false;

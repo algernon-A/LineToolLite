@@ -7,14 +7,20 @@
 - Live **previewing** included, so you can provisionally place a line and adjust spacing and/or rotation to see how it looks in real-time before making the final placement (or cancelling).
 - Displays **distances** and **angles** for fine-tuning.
 - Works both **in-game** and **in the editor**.
+- **Integrates directly with in-game tools** - no hotkey required.
 - Includes integration with yenyang's excellent **[Tree Controller](https://github.com/yenyang/Tree_Controller_BepInEx)** mod.
 
 Works on all types of objects - trees, shrubs, props. You can even place simple buildings and even vehicles (for amusement value only - see limitations below).
 
+# Important information for the 1.3 update
+Version 1.3 of this mod adds a direct User Interface integration with the game's tool system.  This means that the Line Tool is **no longer activated by hotkey**.
+
+Line modes are now activated directly from the new line modes selection at the bottom of the tool options panel.
+
 ## Instructions
 ### To activate the tool:
 - Select the object that you'd like to place in a line (e.g. a tree) - either normally or with the Dev UI.
-- Press **Control-L** to activate the line tool and bring up the tool UI (in the normal tool options place, towards the bottom-left of the screen).
+- Select the desired line mode from the line modes selection at the bottom of the tool options panel (in the normal tool options place, towards the bottom-left of the screen).
 
 ### To place the line:
 - **Left-click** where you want the line to begin, and **left-click again** at the desired endpoint to place the objects (curves require three clicks - start, guidepoint, and end).
@@ -34,6 +40,7 @@ Works on all types of objects - trees, shrubs, props. You can even place simple 
 To remove variable spacing and/or offset, simply set the field(s) back to zero. **Shift-clicking** (10m increments) can make this faster.
 
 ### To exit the tool:
+- Select 'single placement mode',
 - Press **Escape**, or
 - Select another tool or object.
 

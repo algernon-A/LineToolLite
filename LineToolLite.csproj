@@ -6,7 +6,7 @@
 		<Authors>algernon</Authors>
 		<Copyright>Copyright © 2023 algernon (github.com/algernon-A). All rights reserved.</Copyright>
 		<Product>$(Title)</Product>
-		<Version>1.2.0</Version>
+		<Version>1.3.0</Version>
 		<LangVersion>9.0</LangVersion>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 	</PropertyGroup>
@@ -15,6 +15,11 @@
 	<Import Project="Config/Targets.csproj" />
 	<Import Project="Config/References.csproj" />
 	<Import Project="BepInEx/BepInEx.csproj" />
+	<ItemGroup>
+	  <None Remove="UI\common.js" />
+	  <None Remove="UI\modes.html" />
+	  <None Remove="UI\modes.js" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<AdditionalFiles Include="stylecop.json" />
@@ -34,6 +39,9 @@
 	
 	<ItemGroup>
 	  <EmbeddedResource Include="l10n.csv" />
+	  <EmbeddedResource Include="UI\common.js" />
+	  <EmbeddedResource Include="UI\modes.js" />
+	  <EmbeddedResource Include="UI\modes.html" />
 	  <EmbeddedResource Include="UI\ui.css" />
 	  <EmbeddedResource Include="UI\ui.html" />
 	  <EmbeddedResource Include="UI\ui.js" />

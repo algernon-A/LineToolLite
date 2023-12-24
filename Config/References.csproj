@@ -10,6 +10,9 @@
 		<Reference Include="Colossal.Core">
 			<Private>false</Private>
 		</Reference>
+		<Reference Include="Colossal.IO.AssetDatabase">
+			<Private>false</Private>
+		</Reference>
 		<Reference Include="Colossal.UI">
 			<Private>false</Private>
 		</Reference>
@@ -38,6 +41,9 @@
 			<Private>false</Private>
 		</Reference>
 		<Reference Include="Unity.Mathematics">
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="UnityEngine.CoreModule">
 			<Private>false</Private>
 		</Reference>
 		<Reference Include="cohtml.Net">
