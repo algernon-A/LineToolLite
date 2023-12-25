@@ -255,16 +255,7 @@ namespace LineTool
         {
             set
             {
-                // Don't do anything else if no change.
-                ObjectGeometryPrefab geometryPrefab = value as ObjectGeometryPrefab;
-                if (_selectedPrefab == geometryPrefab)
-                {
-                    return;
-                }
-
-                // Revert XP changes and get new value.
-                RestoreXP();
-                _selectedPrefab = geometryPrefab;
+                _selectedPrefab = value as ObjectGeometryPrefab;
 
                 // Update selected entity.
                 if (_selectedPrefab is null)
@@ -291,16 +282,7 @@ namespace LineTool
                     }
 
                     // Reduce any XP to zero while we're using the tool.
-                    if (EntityManager.TryGetComponent(_selectedEntity, out PlaceableObjectData placeableData))
-                    {
-                        _originalXP = placeableData.m_XPReward;
-                        placeableData.m_XPReward = 0;
-                        EntityManager.SetComponentData(_selectedEntity, placeableData);
-                    }
-                    else
-                    {
-                        _originalXP = 0;
-                    }
+                    SaveXP();
                 }
             }
         }
@@ -802,6 +784,24 @@ namespace LineTool
             }
 
             return newEntity;
+        }
+
+        /// <summary>
+        /// Reduces XP gain for the current object to zero and records the original value.
+        /// </summary>
+        private void SaveXP()
+        {
+            // Reduce any XP to zero while we're using the tool.
+            if (EntityManager.TryGetComponent(_selectedEntity, out PlaceableObjectData placeableData))
+            {
+                _originalXP = placeableData.m_XPReward;
+                placeableData.m_XPReward = 0;
+                EntityManager.SetComponentData(_selectedEntity, placeableData);
+            }
+            else
+            {
+                _originalXP = 0;
+            }
         }
 
         /// <summary>

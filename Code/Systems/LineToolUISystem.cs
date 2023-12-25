@@ -246,9 +246,6 @@ namespace LineTool
                             ExecuteScript(_uiView, _modeHTML);
                             ExecuteScript(_uiView, _modeJS);
 
-                            // Select point mode.
-                            ExecuteScript(_uiView, "document.getElementById(\"line-tool-mode-point\").classList.add(\"selected\");");
-
                             _eventHandles.Add(_uiView.RegisterForEvent("SetPointMode", (Action)SetPointMode));
                             _eventHandles.Add(_uiView.RegisterForEvent("SetStraightMode", (Action)SetStraightMode));
                             _eventHandles.Add(_uiView.RegisterForEvent("SetSimpleCurveMode", (Action)SetSimpleCurveMode));

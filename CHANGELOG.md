@@ -1,6 +1,8 @@
+## 1.3.2
+- Fix XP being gained when previewing some buildings and roundabouts.
+
 ## 1.3.1
 - Update README with tool mode location image.
-
 
 ## 1.3
 - Add integration with existing tool panels (no more hotkey).
