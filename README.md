@@ -56,7 +56,7 @@ To remove variable spacing and/or offset, simply set the field(s) back to zero. 
 This mod supports localization. Please help out with translating this mod into different languages [at the CrowdIn project](https://crowdin.com/project/line-tool-cs2/)!
 
 ## Support
-It's usually easiest to contact me at the [**Cities: Skylines modding Discord**](https://discord.gg/7rTsfUdfTf, or I'm also contactable as u/algernon_A on the [Cities: Skylines modding Subreddit](https://www.reddit.com/r/CitiesSkylinesModding) (r/CitiesSkylinesModding). You could also raise an issue on the GitHub.
+It's usually easiest to contact me at the [**Cities: Skylines modding Discord**](https://discord.gg/7rTsfUdfTf), or I'm also contactable as u/algernon_A on the [Cities: Skylines modding Subreddit](https://www.reddit.com/r/CitiesSkylinesModding) (r/CitiesSkylinesModding). You could also raise an issue on the GitHub.
 
 ## Limitations
 Sub-objects aren't yet supported in this version, so if you use this to place buildings they won't have any of their sub-components (such as props, embedded networks, or sub-buildings). The full version of this mod rectifies this.
