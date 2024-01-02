@@ -1,11 +1,11 @@
-scope	key	en-US	zh-HANS	nl-NL	de-DE	ro-RO	es-ES
-LINETOOL	Title	Line tool	Line tool	Lijn penseel	Line tool	Line tool	Line tool
-LINETOOL	LineMode	Line mode	Line mode	Lijn modus	Line mode	Line mode	Line mode
-LINETOOL	Options	Options	Options	Opties	Options	Options	Options
+scope	key	en-US	zh-HANS	nl-NL	de-DE	ro-RO	es-ES					
+LINETOOL	Title	Line tool	Line Tool	Lijn penseel	Linienwerkzeug	Instrumentul pentru linii	Line tool
+LINETOOL	LineMode	Line mode	摆放模式	Lijn modus	Linienmodus	Mod „linie”	Modo de línea
+LINETOOL	Options	Options	设置	Opties	Einstellungen	Opțiuni	Opciones
 LINETOOL	FenceMode	Fence mode	栅栏模式	Schutting modus	Zaunmodus	Mod „gard”	Modo valla
 LINETOOL_DESCRIPTION	FenceMode	Automatically aligns and places objects continuously, like a fence.	像栅栏一样，自动对齐和放置物体。	Lijnt en plaatst objecten automatisch continu uit, zoals een schutting.	Platziert Objekte automatisch wie einen Zaun und richtet sie entsprechend aus.	Aliniază automat și plasează obiectele continuu, ca un gard.	Alinea y coloca objetos de forma continua automáticamente, como una valla.
-LINETOOL	PointMode	Single item	Single item	Enkel object	Single item	Single item	Single item
-LINETOOL_DESCRIPTION	PointMode	Place one object at a time using the standard game tool.	Place one object at a time using the standard game tool.	Plaats één object tegelijkertijd met behulp van de standaard game tool.	Place one object at a time using the standard game tool.	Place one object at a time using the standard game tool.	Place one object at a time using the standard game tool.
+LINETOOL	PointMode	Single item	单个物体	Enkel object	Einzelnes Objekt	Element unic	Un elemento
+LINETOOL_DESCRIPTION	PointMode	Place one object at a time using the standard game tool.	使用游戏默认工具，一次只摆放一个物体。	Plaats één object tegelijkertijd met behulp van de standaard game tool.	Platziere einzelne Objekt mit dem Standardwerkzeug.	Plasează un obiect pe rând folosind instrumentul standard al jocului.	Coloca un elemento a la vez usando la herramienta estándar del juego.
 LINETOOL	StraightLine	Straight line	直线	Rechte lijn	Gerade Linie	Linie dreaptă	Línea recta
 LINETOOL_DESCRIPTION	StraightLine	Place objects along a straight line from point A to point B.	将物体沿着从 A 点到 B 点的直线放置。	Plaats voorwerpen langs een rechte lijn van punt A naar punt B.	Platziert Objekte entlang einer geraden Linie von Punkt A zu Punkt B.	Plasează obiecte de-a lungul unei linii drepte de la punctul A la punctul B.	Coloca objetos en línea del punto A al punto B.
 LINETOOL	SimpleCurve	Simple curve	简单曲线	Eenvoudige bocht	Einfache Kurve	Curbă simplă	Curva simple

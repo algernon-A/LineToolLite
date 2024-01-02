@@ -1,3 +1,6 @@
+## 1.3.3
+- Ensure new trees have default growth state.
+
 ## 1.3.2
 - Fix XP being gained when previewing some buildings and roundabouts.
 

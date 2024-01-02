@@ -777,7 +777,7 @@ namespace LineTool
                 Tree treeData = new ()
                 {
                     m_State = GetTreeState(),
-                    m_Growth = 128,
+                    m_Growth = 0,
                 };
 
                 EntityManager.SetComponentData(newEntity, treeData);
@@ -846,15 +846,12 @@ namespace LineTool
         /// <param name="entity">Entity to check.</param>
         private void EnsureTreeState(Entity entity)
         {
-            // Ensure any trees are still adults.
+            // Ensure any trees have been assigned the correct age.
             if (EntityManager.TryGetComponent<Tree>(entity, out Tree tree))
             {
-                if (tree.m_Growth != 128)
-                {
-                    tree.m_State = GetTreeState();
-                    tree.m_Growth = 128;
-                    EntityManager.SetComponentData(entity, tree);
-                }
+                tree.m_State = GetTreeState();
+                tree.m_Growth = 0;
+                EntityManager.SetComponentData(entity, tree);
             }
         }
 
