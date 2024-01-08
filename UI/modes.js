@@ -47,3 +47,6 @@ lineTool.setupClickButton("line-tool-mode-point", lineTool.handlePointMode, "Poi
 lineTool.setupClickButton("line-tool-mode-straight", lineTool.handleStraightMode, "StraightLine");
 lineTool.setupClickButton("line-tool-mode-simplecurve", lineTool.handleSimpleCurveMode, "SimpleCurve");
 lineTool.setupClickButton("line-tool-mode-circle", lineTool.handleCircleMode, "Circle");
+
+// Apply translations.
+lineTool.applyLocalization(lineTool.modeDiv);

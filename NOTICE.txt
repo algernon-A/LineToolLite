@@ -1,6 +1,6 @@
 Line Tool Lite
 github.com/Algernon-A/LineToolLite
-Copyright (c) 2023 algernon (K. Algernon A. Sheppard).
+Copyright (c) 2023-24 algernon (K. Algernon A. Sheppard).
 
 A modified version of the full Line Tool mod for Cities: Skylines II (github.com/Algernon-A/LineTool-CS2) with alterations and removals to make it compatible with BepInEx and usable with Cities: Skylines public builds from version 1.0.14 which do not have official modding support.
-Copyright (c) 2023 algernon (K. Algernon A. Sheppard; github.com/Algernon-A).  All rights reserved.
+Copyright (c) 2023-24 algernon (K. Algernon A. Sheppard; github.com/Algernon-A).  All rights reserved.

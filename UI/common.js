@@ -65,6 +65,16 @@ if (typeof lineTool.setupClickButton !== 'function') {
     }
 }
 
+// Function to setup controls with a scrollwheel component.
+if (typeof lineTool.setupWheel !== 'function') {
+    lineTool.setupWheel = function (id, onwheel) {
+        let newControl = document.getElementById(id);
+        if (newControl) {
+            newControl.onwheel = onwheel;
+        }
+    }
+}
+
 // Function to setup tooltip.
 if (typeof lineTool.setTooltip !== 'function') {
     lineTool.setTooltip = function (id, toolTipKey) {

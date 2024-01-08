@@ -299,6 +299,11 @@ lineTool.setTooltip("line-tool-rotation-field", "Rotation");
 lineTool.setTooltip("line-tool-xOffset-field", "SpacingVariation");
 lineTool.setTooltip("line-tool-zOffset-field", "OffsetVariation");
 
+lineTool.setupWheel("line-tool-spacing-field", (event) => { lineTool.adjustSpacing(event, event.deltaY / 30); });
+lineTool.setupWheel("line-tool-rotation-field", (event) => { lineTool.adjustRotation(event, event.deltaY / 30); });
+lineTool.setupWheel("line-tool-xOffset-field", (event) => { lineTool.adjustRandomSpacing(event, event.deltaY / 30); });
+lineTool.setupWheel("line-tool-zOffset-field", (event) => { lineTool.adjustRandomOffset(event, event.deltaY / 30); });
+
 // Apply translations.
 lineTool.applyLocalization(lineTool.div);
 

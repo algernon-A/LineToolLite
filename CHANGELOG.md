@@ -1,3 +1,9 @@
+## 1.3.4
+- Add mouse scroll wheel adjustments to numerical fields.
+- Fix missing localization for modes panel title.
+- Add Traditional Chinese localization from CrowdIn translation volunteers.
+- Adjust starting position for curves when using fence mode.
+
 ## 1.3.3
 - Ensure new trees have default growth state.
 

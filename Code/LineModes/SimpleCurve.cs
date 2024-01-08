@@ -131,7 +131,8 @@ namespace LineTool
             // Randomizer.
             System.Random random = new ((int)(currentPos.x + currentPos.z) * 1000);
 
-            float tFactor = 0f;
+            // For fence mode offset initial spacing by object half-length (so start of item aligns with the line start point).
+            float tFactor = spacingMode == SpacingMode.FenceMode ? BezierStep(0, spacing / 2f) : 0f;
             float distanceTravelled = 0f;
             while (tFactor < 1.0f)
             {
