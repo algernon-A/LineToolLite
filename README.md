@@ -12,8 +12,8 @@ This mod enhances existing tools so you can precisely and rapidly place objects 
 - **Adjust spacing and rotation**: Use the in-game tool UI for more control, including random rotation for a more natural look.
 - **Random position variation** (optional): Provides natural irregularity.
 - **Live preview**: Provisionally place a line, adjust spacing and/or rotation, and see how it looks in real-time before making the final placement (or cancelling).
-- Displays **distances** and **angles** for fine-tuning.
-- Includes integration with yenyang's excellent [Tree Controller](https://github.com/yenyang/Tree_Controller_BepInEx) mod.
+- Displays distances and angles for fine-tuning.
+- Integrates with yenyang's excellent [Tree Controller](https://github.com/yenyang/Tree_Controller_BepInEx) mod.
 
 ### UI integration
 
@@ -37,9 +37,9 @@ Version 1.3 of this mod adds a direct User Interface (UI) integration with the g
 
 ## Place a line
 
-- **Left-click** where you want the line to begin, and **left-click** again at the desired endpoint to place the objects. **Note**: Curves require three clicks &mdash; start, guidepoint, and end).
+- **Click** where you want the line to begin, and click again at the desired endpoint to place the objects. **Note**: Curves require three clicks &mdash; start, guidepoint, and end.
 - **Shift-click** at the end of a line starts a new line placement at the spot where the previous line ended.
-- **Control-click** at the end of a line leaves it in preview mode; you can adjust the settings and see the results in real-time. You can also drag the highlighted control points (blue circles) to adjust the line positioning (**Control-click** to start dragging ensures that you don't accidentally trigger placement if you miss the point circles, but regular clicking also works). When finished, **left-click** to place or **right-click** to cancel.
+- **Control-click** at the end of a line leaves it in preview mode; you can adjust the settings and see the results in real-time. You can also drag the highlighted control points (blue circles) to adjust the line positioning (**Control-click** to start dragging ensures that you don't accidentally trigger placement if you miss the point circles, but regular clicking also works). When finished, **click** to place or **right-click** to cancel.
 - **Right-click** to cancel placement.
 
 ### Tool options
