@@ -6,7 +6,7 @@ This mod enhances existing tools so you can precisely and rapidly place objects 
 
 - **Integrates directly with in-game tools**: No hotkey required.
 - **Place objects in lines**: Create straight lines, curves, or circles.
-- Works both **in-game** and **in the editor**.
+- Works both *in-game* and *in the editor*.
 - **Fence mode**: Automatically align and place objects end-to-end.
 - **Accurate placement**: No worrying about imprecision.
 - **Adjust spacing and rotation**: Use the in-game tool UI for more control, including random rotation for a more natural look.
@@ -32,12 +32,8 @@ Version 1.3 of this mod adds a direct User Interface (UI) integration with the g
 
 ## Start and stop Line Tool Lite
 
-To activate the tool:
-
-1. Select the object that you'd like to place in a line (such as a tree), either normally or with the Dev UI.
-2. Select a line mode from the line modes options at the bottom of the tool options panel (below Tool Mode; see image above).
-
-To exit the tool, select 'single placement mode' to return to the normal placement mode for the selected object, or press **Escape**.
+- To activate the tool, select the object that you'd like to place in a line (such as a tree), either normally or with the Dev UI. Then, select a line mode from the line modes options at the bottom of the tool options panel (below Tool Mode; see image above).
+- To exit the tool, select 'single placement mode' to return to the normal placement mode for the selected object, or press **Escape**.
 
 ## Place a line
 
@@ -55,10 +51,10 @@ To exit the tool, select 'single placement mode' to return to the normal placeme
 
     For circle mode, this causes spacing to be rounded to the *nearest number* (up or down) that ensures an even placement around the circle (default circle rounding is always *up*).
 - Select **random rotation** to have each object in the line have a different randomly-chosen rotation, or manually adjust the rotation for all items using the arrow buttons &mdash; click for 10-degree increments, **Shift-click** for 90 degrees, **Control-click** for 1 degree.
-- Set **variable spacing** to greater than zero to apply a random length offset to each item's spacing, up to the maximum distance specified &mdash; click for 1m increments, **Shift-click** for 10m, **Control-click** for 0.1m.
-- Set **variable offset** to greater than zero to apply a random sideways offset to each item, up to the maximum distance specified &mdash; click for 1m increments, **Shift-click** for 10m, **Control-click** for 0.1m.
+- Set **variable spacing** greater than zero to apply a random length offset to each item's spacing, up to the maximum distance specified &mdash; click for 1m increments, **Shift-click** for 10m, **Control-click** for 0.1m.
+- Set **variable offset** greater than zero to apply a random sideways offset to each item, up to the maximum distance specified &mdash; click for 1m increments, **Shift-click** for 10m, **Control-click** for 0.1m.
 
-To remove variable spacing and/or offset, set the field(s) back to zero. **Shift-click** (10m increments) to make this faster.
+    To remove variable spacing and/or offset, set the field(s) back to zero. **Shift-click** (10m increments) to make this faster.
 
 ## Limitations
 
