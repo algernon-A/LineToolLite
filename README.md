@@ -1,6 +1,6 @@
 # Cities Skylines 2 : Line Tool Lite
 
-This mod enhances existing tools so you can precisely and rapidly place objects such as trees, shrubs, and props. You can also place simple buildings and even vehicles (for amusement value only; [see the limitations](#limitations)).
+This mod enhances existing tools so you can precisely and quickly place objects such as trees, shrubs, and props in lines, curves, and circles with varying parameters. You can also place simple buildings and even vehicles (for amusement value only; [see the limitations](#limitations)).
 
 ## Features
 
