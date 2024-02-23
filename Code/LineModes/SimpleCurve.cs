@@ -438,90 +438,90 @@ namespace LineTool
             {
                 // Negative (reverse) direction.
                 distance = 0f - distance;
-                float t1 = 0f;
-                float t2 = start;
-                float f1 = Vector3.SqrMagnitude(_thisBezier.a - (float3)startPos);
-                float f2 = 0f;
+                float startT = 0f;
+                float endT = start;
+                float startDistance = Vector3.SqrMagnitude(_thisBezier.a - (float3)startPos);
+                float endDistance = 0f;
 
                 // Eight steps max.
                 for (int i = 0; i < 8; ++i)
                 {
                     // Calculate current position.
-                    float tMid = (t1 + t2) * 0.5f;
-                    Vector3 midpoint = MathUtils.Position(_thisBezier, tMid);
+                    float midT = (startT + endT) * 0.5f;
+                    Vector3 midpoint = MathUtils.Position(_thisBezier, midT);
                     float midDistance = Vector3.SqrMagnitude(midpoint - startPos);
 
                     // Check for nearer match.
                     if (midDistance < distance * distance)
                     {
-                        t2 = tMid;
-                        f2 = midDistance;
+                        endT = midT;
+                        endDistance = midDistance;
                     }
                     else
                     {
-                        t1 = tMid;
-                        f1 = midDistance;
+                        startT = midT;
+                        startDistance = midDistance;
                     }
                 }
 
                 // We've been using square magnitudes for comparison, so rest to true value.
-                f1 = Mathf.Sqrt(f1);
-                f2 = Mathf.Sqrt(f2);
+                startDistance = Mathf.Sqrt(startDistance);
+                endDistance = Mathf.Sqrt(endDistance);
 
                 // Check for exact match.
-                float fDiff = f1 - f2;
+                float fDiff = startDistance - endDistance;
                 if (fDiff == 0f)
                 {
                     // Exact match found - return that.
-                    return t2;
+                    return endT;
                 }
 
                 // Not an exact match - use an interpolation.
-                return Mathf.Lerp(t2, t1, Mathf.Clamp01((distance - f2) / fDiff));
+                return Mathf.Lerp(endT, startT, Mathf.Clamp01((distance - endDistance) / fDiff));
             }
             else
             {
                 // Positive (forward) direction.
-                float t1 = start;
-                float t2 = 1f;
-                float f1 = 0f;
-                float f2 = Vector3.SqrMagnitude(_thisBezier.d - (float3)startPos);
+                float startT = start;
+                float endT = 1f;
+                float startDistance = 0f;
+                float endDistance = Vector3.SqrMagnitude(_thisBezier.d - (float3)startPos);
 
                 // Eight steps max.
                 for (int i = 0; i < 8; ++i)
                 {
                     // Calculate current position.
-                    float tMid = (t1 + t2) * 0.5f;
+                    float tMid = (startT + endT) * 0.5f;
                     Vector3 midPoint = MathUtils.Position(_thisBezier, tMid);
                     float midDistance = Vector3.SqrMagnitude(midPoint - startPos);
 
                     // Check for nearer match.
                     if (midDistance < distance * distance)
                     {
-                        t1 = tMid;
-                        f1 = midDistance;
+                        startT = tMid;
+                        startDistance = midDistance;
                     }
                     else
                     {
-                        t2 = tMid;
-                        f2 = midDistance;
+                        endT = tMid;
+                        endDistance = midDistance;
                     }
                 }
 
                 // We've been using square magnitudes for comparison, so rest to true value.
-                f1 = Mathf.Sqrt(f1);
-                f2 = Mathf.Sqrt(f2);
+                startDistance = Mathf.Sqrt(startDistance);
+                endDistance = Mathf.Sqrt(endDistance);
 
                 // Check for exact match.
-                float fDiff = f2 - f1;
-                if (fDiff == 0f)
+                float remainder = endDistance - startDistance;
+                if (remainder == 0f)
                 {
                     // Exact match found - return that.
-                    return t1;
+                    return startT;
                 }
 
                 // Not an exact match - use an interpolation.
-                return Mathf.Lerp(t1, t2, Mathf.Clamp01((distance - f1) / fDiff));
+                return Mathf.Lerp(startT, endT, Mathf.Clamp01((distance - startDistance) / remainder));
             }
         }
 
